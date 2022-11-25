@@ -4,7 +4,7 @@
         "name": "Warrior",
         "pic": "",
         "cash": 5,
-        "completed_tutorial": 1,
+        "completed_tutorial": 0,
         "default_map": 0,
         "map_names": [
             "Village"
@@ -41,7 +41,29 @@
             "receivedAssists": {},
             "increasedPopulation": 0,
             "expirableUnitsTime": {},
-            "items": []
+            "__#__ITEMS_hint": [
+                "0 = item_id",
+                "1 = x",
+                "2 = y",
+                "3 = unknown",
+                "4 = orientation",
+                "5 = unknown_array []",
+                "6 = unknown_dict {}",
+                "7 = team (PLAYER_SELF = 1, PLAYER_ENEMY = 2, PLAYER_NEUTRAL = 3)"
+            ],
+            "items": [
+                [26, 51, 41, 0, 0, [], {}, 1],
+                [905, 56, 42, 0, 0, [], {}, 1],
+                [23, 54, 49, 0, 0, [], {}, 1],
+                [23, 55, 49, 0, 0, [], {}, 1],
+                [23, 56, 49, 0, 0, [], {}, 1],
+                [23, 57, 49, 0, 0, [], {}, 1],
+                [23, 58, 49, 0, 0, [], {}, 1],
+                [23, 59, 49, 0, 0, [], {}, 1],
+                [23, 59, 48, 0, 0, [], {}, 1],
+                [23, 59, 47, 0, 0, [], {}, 1],
+                [22, 58, 48, 0, 0, [], {}, 1]
+            ]
         }
     ],
     "privateState": {
