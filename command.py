@@ -54,12 +54,21 @@ def do_command(USERID, __1, cmd, args, __2):
             xp = int(get_attribute_from_item_id(item_id, "xp"))
             map["xp"] += xp
             # TODO: Use up resources
-            pass
 
         # Add item to map
         map["items"] += [ [item_id, x, y, 0, orientation, [], {}, playerID] ]
 
         print("Add", str(get_name_from_item_id(item_id)), "at", f"({x},{y})")
+        return
+
+    elif cmd == "complete_tutorial":
+        tutorial_step = args[0]
+        print("Tutorial step", tutorial_step, "reached.")
+        if tutorial_step >= 25:
+            print("Tutorial COMPLETED!")
+            save["playerInfo"]["completed_tutorial"] = 1
+            save["privateState"]["dragonNestActive"] = 1 # I assume this is also valid for Social Wars?
+        return
 
     else:
         print(f"Unhandled command '{cmd}' -> args", args)
