@@ -23,7 +23,7 @@ from engine import timestamp_now
 from version import version_name
 
 host = '127.0.0.1'
-port = 5050
+port = 5055
 
 app = Flask(__name__)
 

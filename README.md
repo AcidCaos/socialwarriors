@@ -22,7 +22,7 @@ Social Wars preservation project.
 ## How to Play
 
 - Run the social-warriors executable. (It might take a couple of seconds to start)
-- Open your flash browser and navigate to `http://127.0.0.1:5050/`.
+- Open your flash browser and navigate to `http://127.0.0.1:5055/`.
 
 ## On archives and accessibility to digital heritage
 
