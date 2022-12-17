@@ -1,8 +1,9 @@
+import json
 
 from sessions import session, save_session
-from get_game_config import get_game_config, get_level_from_xp, get_name_from_item_id, get_attribute_from_mission_id, get_xp_from_level, get_attribute_from_item_id, get_item_from_subcat_functional
+from get_game_config import get_name_from_item_id, get_attribute_from_item_id, get_attribute_from_goal_id
 from constants import Constant
-from engine import timestamp_now
+from engine import timestamp_now, apply_cost
 
 def command(USERID, data):
     first_number = data["first_number"]
@@ -24,10 +25,7 @@ def do_command(USERID, __1, cmd, args, __2):
     save = session(USERID)
     print (" [+] COMMAND: ", cmd, "(", args, ") -> ", sep='', end='')
 
-    if cmd == "stub":
-        print(" ".join(args))
-
-    elif cmd == "buy":
+    if cmd == "buy":
         # args[0] - command order id (can be ignored for now)
         # args[1] - item_id
         # args[2] - map tile x
@@ -38,9 +36,8 @@ def do_command(USERID, __1, cmd, args, __2):
         # args[7] - buy reason, "b" is when player buys the item from the shop for resources
         # print(f"\nitem={args[1]}\nx={args[2]}\ny={args[3]}\norientation={args[5]}\nplayerID={args[4]}\nreason={args[7]}")
 
-        town_id = 0 # In Social Wars there's no multiple maps thing, but maybe it's args[6]
-
-        map = save["maps"][town_id]
+        map = save["maps"][0]
+        
         item_id = args[1]
         x = args[2]
         y = args[3]
@@ -53,7 +50,8 @@ def do_command(USERID, __1, cmd, args, __2):
             # Give player xp
             xp = int(get_attribute_from_item_id(item_id, "xp"))
             map["xp"] += xp
-            # TODO: Use up resources
+            # Use up resources
+            apply_cost(save["playerInfo"], map, item_id)
 
         # Add item to map
         map["items"] += [ [item_id, x, y, 0, orientation, [], {}, playerID] ]
@@ -67,8 +65,21 @@ def do_command(USERID, __1, cmd, args, __2):
         if tutorial_step >= 25:
             print("Tutorial COMPLETED!")
             save["playerInfo"]["completed_tutorial"] = 1
-            save["privateState"]["dragonNestActive"] = 1 # I assume this is also valid for Social Wars?
         return
+    
+    elif cmd == "set_goals":
+        goal_id = args[0]
+        progress = json.loads(args[1]) # format: [visited, currentStep]
+        save["privateState"]["goals"][goal_id] = progress
+        print(f"Goal '", get_attribute_from_goal_id(goal_id, "title"), "' progressed.", sep='')
+    
+    elif cmd == "complete_goal":
+        goal_id = args[0]
+        # Reward
+        reward = get_attribute_from_goal_id(goal_id, "reward")
+        map = save["maps"][0]
+        map["gold"] += reward
+        print(f"Goal '", get_attribute_from_goal_id(goal_id, "title"), "' completed and rewarded.", sep='')
 
     else:
         print(f"Unhandled command '{cmd}' -> args", args)

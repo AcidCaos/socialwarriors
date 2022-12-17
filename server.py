@@ -170,7 +170,7 @@ def command_response():
     user_key = request.values['user_key']
     language = request.values['language']
 
-    print(f"command: USERID: {USERID}. --", request.values)
+    # print(f"command: USERID: {USERID}. --", request.values)
 
     data_str = request.values['data']
     data_hash = data_str[:64]

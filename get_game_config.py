@@ -109,16 +109,16 @@ def get_item_from_subcat_functional(subcat_functional: int) -> dict:
     items_index = items_dict_subcat_functional_to_items_index[int(subcat_functional)] if int(subcat_functional) in items_dict_subcat_functional_to_items_index else None
     return __game_config["items"][items_index] if items_index is not None else None
 
-############
-# MISSIONS #
-############
+#########
+# GOALS #
+#########
 
-# missions_dict_id_to_missions_index = {int(item["id"]): i for i, item in enumerate(__game_config["missions"])}
+goals_id_to_goals_index = {int(item["id"]): i for i, item in enumerate(__game_config["goals"])}
 
-def get_mission_from_id(id: int) -> dict:
-    items_index = missions_dict_id_to_missions_index[int(id)] if int(id) in missions_dict_id_to_missions_index else None
-    return __game_config["missions"][items_index] if items_index is not None else None
+def get_goal_from_id(id: int) -> dict:
+    items_index = goals_id_to_goals_index[int(id)] if int(id) in goals_id_to_goals_index else None
+    return __game_config["goals"][items_index] if items_index is not None else None
 
-def get_attribute_from_mission_id(id: int, attribute_name: str) -> str:
-    mission = get_mission_from_id(id)
-    return mission[attribute_name] if mission and attribute_name in mission else None
+def get_attribute_from_goal_id(id: int, attribute_name: str) -> str:
+    goal = get_goal_from_id(id)
+    return goal[attribute_name] if goal and attribute_name in goal else None
