@@ -39,6 +39,8 @@ print (" [+] Configuring server routes...")
 def login():
     # Log out previous session
     session.pop('USERID', default=None)
+    # Reload saves. Allows saves modification without server reset
+    load_saved_villages()
     # If logging in, set session USERID, and go to play
     if request.method == 'POST':
         session['USERID'] = request.form['USERID']
