@@ -1,7 +1,7 @@
 import json
 
 from sessions import session, save_session
-from get_game_config import get_name_from_item_id, get_attribute_from_item_id, get_attribute_from_goal_id
+from get_game_config import get_name_from_item_id, get_attribute_from_item_id, get_attribute_from_goal_id, get_xp_from_level
 from constants import Constant
 from engine import timestamp_now, apply_cost
 
@@ -26,7 +26,7 @@ def do_command(USERID, __1, cmd, args, __2):
     print (" [+] COMMAND: ", cmd, "(", args, ") -> ", sep='', end='')
 
     if cmd == "buy":
-        # args[0] - command order id (can be ignored for now)
+        # args[0] - map key/id for the item
         # args[1] - item_id
         # args[2] - map tile x
         # args[3] - map tile y
@@ -38,6 +38,7 @@ def do_command(USERID, __1, cmd, args, __2):
 
         map = save["maps"][0]
         
+        map_item_index = args[0]
         item_id = args[1]
         x = args[2]
         y = args[3]
@@ -54,7 +55,7 @@ def do_command(USERID, __1, cmd, args, __2):
             apply_cost(save["playerInfo"], map, item_id)
 
         # Add item to map
-        map["items"] += [ [item_id, x, y, 0, orientation, [], {}, playerID] ]
+        map["items"][str(map_item_index)] = [item_id, x, y, 0, orientation, [], {}, playerID]
 
         print("Add", str(get_name_from_item_id(item_id)), "at", f"({x},{y})")
         return
@@ -80,6 +81,31 @@ def do_command(USERID, __1, cmd, args, __2):
         map = save["maps"][0]
         map["gold"] += reward
         print(f"Goal '", get_attribute_from_goal_id(goal_id, "title"), "' completed and rewarded.", sep='')
+
+    elif cmd == "move":
+        map_item_index = args[0]
+        x = args[1]
+        y = args[2]
+        frame = args[3]
+        string = args[4]
+
+        # Move item
+        map = save["maps"][0]
+        item = map["items"][str(map_item_index)]
+        item[1] = x
+        item[2] = y
+        print("Move", str(get_name_from_item_id(item[0])), "to", f"({x},{y})")
+
+    elif cmd == "kill_iid":
+        item_id = args[0]
+        reason_str = args[1]
+
+        # XP Reward
+        map = save["maps"][0]
+        xp_reward = int(get_attribute_from_item_id(item_id, "xp"))
+        map["xp"] += xp_reward
+
+        print("Killed", str(get_name_from_item_id(item_id)))
 
     else:
         print(f"Unhandled command '{cmd}' -> args", args)
