@@ -3,7 +3,7 @@ import json
 from sessions import session, save_session
 from get_game_config import get_name_from_item_id, get_attribute_from_item_id, get_attribute_from_goal_id, get_xp_from_level
 from constants import Constant
-from engine import timestamp_now, apply_cost
+from engine import timestamp_now, apply_cost, apply_collect
 
 def command(USERID, data):
     first_number = data["first_number"]
@@ -82,8 +82,45 @@ def do_command(USERID, __1, cmd, args, __2):
         map["gold"] += reward
         print(f"Goal '", get_attribute_from_goal_id(goal_id, "title"), "' completed and rewarded.", sep='')
 
+    elif cmd == "level_up":
+        new_level = args[0]
+
+        xp_expected = get_xp_from_level(new_level)
+        map = save["maps"][0]
+        map["level"] = new_level
+        map["xp"] = max(xp_expected, map["xp"]) # Keep up with XP
+        print("Level up! New level:", new_level)
+
+    elif cmd == "set_quest_var":
+        key = args[0]
+        value = args[1]
+
+        map = save["maps"][0]
+
+        # questVars = {
+        #     "id": 0,
+        #     "spawned": False,
+        #     "ended": False,
+        #     "visited": False,
+        #     "activators": [],
+        #     "boss": [],
+        #     "treasure": [],
+        #     "killed": []
+        # }
+        questVars = map["currentQuestVars"]
+
+        # TODO: Check that those values are actually the same
+        if key == "id":
+            map ["idCurrentMission"] = int(value)
+        # TODO: What should be there in the first place?
+        if not questVars:
+            questVars = {}
+        # TODO: Should it be type-parsed?
+        questVars[key] = value
+        print(f"Set current quest {key} to '{value}'")
+
     elif cmd == "move":
-        map_item_index = args[0]
+        item_index = args[0]
         x = args[1]
         y = args[2]
         frame = args[3]
@@ -91,11 +128,40 @@ def do_command(USERID, __1, cmd, args, __2):
 
         # Move item
         map = save["maps"][0]
-        item = map["items"][str(map_item_index)]
+        item = map["items"][str(item_index)]
         item[1] = x
         item[2] = y
         print("Move", str(get_name_from_item_id(item[0])), "to", f"({x},{y})")
+    
+    elif cmd == "collect":
+        item_index = args[0]
+        
+        map = save["maps"][0]
+        item = map["items"][str(item_index)]
+        item_id = item[0]
 
+        # Apply collect
+        collect = int(get_attribute_from_item_id(item_id, "collect"))
+        collect_type = get_attribute_from_item_id(item_id, "collect_type")
+        collect_xp = int(get_attribute_from_item_id(item_id, "collect_xp"))
+        max_collects = int(get_attribute_from_item_id(item_id, "max_collects"))
+
+        map["xp"] += collect_xp
+        apply_collect(save["playerInfo"], map, collect_type, collect)
+
+        print("Collect", str(get_name_from_item_id(item[0])))
+    
+    elif cmd == "sell":
+        item_index = args[0]
+        reason = args[1]
+        
+        # Delete item
+        map = save["maps"][0]
+        name = str(get_name_from_item_id(map["items"][str(item_index)][0]))
+        del map["items"][str(item_index)]
+
+        print(f"Remove {name}. Reason: {reason}")
+    
     elif cmd == "kill_iid":
         item_id = args[0]
         reason_str = args[1]

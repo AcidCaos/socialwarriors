@@ -19,3 +19,15 @@ def apply_cost(playerInfo: dict, map: dict, item_id: int) -> None:
             playerInfo["cash"] = max(playerInfo["cash"] - costs["c"], 0)
         if "o" in costs:
             map["oil"] = max(map["oil"] - costs["o"], 0)
+
+def apply_collect(playerInfo: dict, map: dict, type: str, value: int):
+    if type == "w":
+        map["wood"] += value
+    if type == "g":
+        map["gold"] += value
+    if type == "s":
+        map["steel"] += value
+    if type == "c":
+        playerInfo["cash"] += value
+    if type == "o":
+        map["oil"] += value
