@@ -43,7 +43,7 @@
             "receivedAssists": {},
             "timestampLastTrade": 0,
             "numTradesDone": 0,
-            "store": [],
+            "store": {},
             "increasedPopulation": 0,
             "expirableUnitsTime": {},
             "timestampLastChapter": 0,
