@@ -26,26 +26,16 @@ def do_command(USERID, __1, cmd, args, __2):
     print (" [+] COMMAND: ", cmd, "(", args, ") -> ", sep='', end='')
 
     if cmd == "buy":
-        # args[0] - map key/id for the item
-        # args[1] - item_id
-        # args[2] - map tile x
-        # args[3] - map tile y
-        # args[4] - player_team
-        # args[5] - orientation
-        # args[6] - unknown
-        # args[7] - buy reason, "b" is when player buys the item from the shop for resources
-        # print(f"\nitem={args[1]}\nx={args[2]}\ny={args[3]}\norientation={args[5]}\nplayerID={args[4]}\nreason={args[7]}")
-
-        map = save["maps"][0]
-        
-        map_item_index = args[0]
+        item_index = args[0]
         item_id = args[1]
         x = args[2]
         y = args[3]
-        playerID = args[4]
+        playerID = args[4] # player team
         orientation = args[5]
         unknown = args[6]
         reason = args[7]
+
+        map = save["maps"][0]
 
         if reason == "b":
             # Give player xp
@@ -55,7 +45,7 @@ def do_command(USERID, __1, cmd, args, __2):
             apply_cost(save["playerInfo"], map, item_id)
 
         # Add item to map
-        map["items"][str(map_item_index)] = [item_id, x, y, 0, orientation, [], {}, playerID]
+        map["items"][str(item_index)] = [item_id, x, y, 0, orientation, [], {}, playerID]
 
         print("Add", str(get_name_from_item_id(item_id)), "at", f"({x},{y})")
         return
@@ -76,17 +66,20 @@ def do_command(USERID, __1, cmd, args, __2):
     
     elif cmd == "complete_goal":
         goal_id = args[0]
+
+        map = save["maps"][0]
+
         # Reward
         reward = get_attribute_from_goal_id(goal_id, "reward")
-        map = save["maps"][0]
         map["gold"] += reward
         print(f"Goal '", get_attribute_from_goal_id(goal_id, "title"), "' completed and rewarded.", sep='')
 
     elif cmd == "level_up":
         new_level = args[0]
 
-        xp_expected = get_xp_from_level(max(0, new_level - 1))
         map = save["maps"][0]
+
+        xp_expected = get_xp_from_level(max(0, new_level - 1))
         map["level"] = new_level
         map["xp"] = max(xp_expected, map["xp"]) # Keep up with XP
         print("Level up! New level:", new_level)
@@ -126,8 +119,13 @@ def do_command(USERID, __1, cmd, args, __2):
         frame = args[3]
         string = args[4]
 
-        # Move item
         map = save["maps"][0]
+
+        if str(item_index) not in map["items"]:
+            print("Error: item not found.")
+            return
+
+        # Move item
         item = map["items"][str(item_index)]
         item[1] = x
         item[2] = y
@@ -135,8 +133,13 @@ def do_command(USERID, __1, cmd, args, __2):
     
     elif cmd == "collect":
         item_index = args[0]
-        
+
         map = save["maps"][0]
+
+        if str(item_index) not in map["items"]:
+            print("Error: item not found.")
+            return
+        
         item = map["items"][str(item_index)]
         item_id = item[0]
 
@@ -154,9 +157,14 @@ def do_command(USERID, __1, cmd, args, __2):
     elif cmd == "sell":
         item_index = args[0]
         reason = args[1]
+
+        map = save["maps"][0]
+
+        if str(item_index) not in map["items"]:
+            print("Error: item not found.")
+            return
         
         # Delete item
-        map = save["maps"][0]
         name = str(get_name_from_item_id(map["items"][str(item_index)][0]))
         del map["items"][str(item_index)]
 
@@ -167,9 +175,13 @@ def do_command(USERID, __1, cmd, args, __2):
     elif cmd == "kill":
         item_index = args[0]
         reason = args[1]
+
+        map = save["maps"][0]
+        
+        if str(item_index) not in map["items"]:
+            print("Error: item not found.")
         
         # Delete item
-        map = save["maps"][0]
         name = str(get_name_from_item_id(map["items"][str(item_index)][0]))
         del map["items"][str(item_index)]
 
@@ -179,8 +191,9 @@ def do_command(USERID, __1, cmd, args, __2):
         item_id = args[0]
         reason_str = args[1]
 
-        # XP Reward
         map = save["maps"][0]
+
+        # XP Reward
         xp_reward = int(get_attribute_from_item_id(item_id, "xp"))
         map["xp"] += xp_reward
 
@@ -193,7 +206,8 @@ def do_command(USERID, __1, cmd, args, __2):
 
         # Delete items
         for index in index_list:
-            del map["items"][str(index)]
+            if str(index) in map["items"]:
+                del map["items"][str(index)]
         
         print(f"Removed {len(index_list)} items.")
 
@@ -201,8 +215,13 @@ def do_command(USERID, __1, cmd, args, __2):
         item_index = args[0]
         orientation = args[1]
 
-        # XP Reward
         map = save["maps"][0]
+
+        if str(item_index) not in map["items"]:
+            print("Error: item not found.")
+            return
+        
+        # XP Reward
         map["items"][str(item_index)][4] = int(orientation)
 
         print("Rotate", str(get_name_from_item_id(map["items"][str(item_index)][0])))
@@ -211,6 +230,7 @@ def do_command(USERID, __1, cmd, args, __2):
         expansion = args[0]
 
         map = save["maps"][0]
+
         map["expansions"] += [int(expansion)]
         # TODO: Substract resources
         print("Unlocked Expansion", expansion)
@@ -219,6 +239,11 @@ def do_command(USERID, __1, cmd, args, __2):
         item_index = args[0]
 
         map = save["maps"][0]
+
+        if str(item_index) not in map["items"]:
+            print("Error: item not found.")
+            return
+
         item_id = map["items"][str(item_index)][0]
         name = str(get_name_from_item_id(item_id))
 
@@ -280,7 +305,7 @@ def do_command(USERID, __1, cmd, args, __2):
             else:
                 map["store"][str(item_id)] += 1
 
-        print("Add to store", [get_name_from_item_id(item_id) for item_id in item_id_list].join(","))
+        print("Add to store", ", ".join([get_name_from_item_id(item_id) for item_id in item_id_list]))
 
     elif cmd == "next_research_step":
         type = args[0] # 0: TYPE_AREA_51 ,  1: TYPE_ROBOTIC
@@ -329,6 +354,8 @@ def do_command(USERID, __1, cmd, args, __2):
         map["oil"] = oil
         map["steel"] = steel
         map["wood"] = wood
+
+        print("Keep up with resources.")
     
     elif cmd == "add_xp_unit":
         item_index = args[0]
@@ -336,6 +363,7 @@ def do_command(USERID, __1, cmd, args, __2):
         level = args[2]
 
         map = save["maps"][0]
+        
         item_properties = map["items"][str(item_index)][6]
         if "xp" not in item_properties:
             item_properties["xp"] = xp_gain
