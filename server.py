@@ -11,7 +11,7 @@ print (" [+] Applying config patches...")
 patch_game_config()
 
 print (" [+] Loading players...")
-from get_player_info import get_player_info
+from get_player_info import get_player_info, get_neighbor_info
 from sessions import load_saved_villages, all_saves_userid, all_saves_info, save_info, new_village
 load_saved_villages()
 
@@ -139,8 +139,18 @@ def get_player_info_response():
     user_key = request.values['user_key']
     language = request.values['language']
 
+    user = request.values['user'] if 'user' in request.values else None
+    client_id = int(request.values['client_id']) if 'client_id' in request.values else None
+    map = int(request.values['map']) if 'map' in request.values else None
+
     print(f"get_player_info: USERID: {USERID}. --", request.values)
-    return (get_player_info(USERID), 200)
+
+    # Current Player
+    if user is None:
+        return (get_player_info(USERID), 200)
+    else:
+        return (get_neighbor_info(user, map), 200)
+    
 
 @app.route("/dynamic.flash1.dev.socialpoint.es/appsfb/menvswomen/srvsexwars/sync_error_track.php", methods=['POST'])
 def sync_error_track_response():

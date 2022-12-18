@@ -127,19 +127,27 @@ def session(USERID: str) -> dict:
     assert(isinstance(USERID, str))
     return __saves[USERID] if USERID in __saves else None
 
+def neighbor_session(USERID: str) -> dict:
+    assert(isinstance(USERID, str))
+    if USERID in __saves:
+        return __saves[USERID]
+    if USERID in __villages:
+        return __villages[USERID]
+
 def neighbors(USERID: str):
     neighbors = []
     # static villages
     for key in __villages:
         vill = __villages[key]
-        neigh = vill["playerInfo"]
-        neigh["xp"] = vill["maps"][0]["xp"]
-        neigh["level"] = vill["maps"][0]["level"]
-        neigh["gold"] = vill["maps"][0]["gold"]
-        neigh["wood"] = vill["maps"][0]["wood"]
-        neigh["oil"] = vill["maps"][0]["oil"]
-        neigh["steel"] = vill["maps"][0]["steel"]
-        neighbors += [neigh]
+        if vill["playerInfo"]["pid"] != '100000031': # general Mike
+            neigh = vill["playerInfo"]
+            neigh["xp"] = vill["maps"][0]["xp"]
+            neigh["level"] = vill["maps"][0]["level"]
+            neigh["gold"] = vill["maps"][0]["gold"]
+            neigh["wood"] = vill["maps"][0]["wood"]
+            neigh["oil"] = vill["maps"][0]["oil"]
+            neigh["steel"] = vill["maps"][0]["steel"]
+            neighbors += [neigh]
     # other players
     for key in __saves:
         vill = __saves[key]
