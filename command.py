@@ -282,6 +282,34 @@ def do_command(USERID, __1, cmd, args, __2):
 
         print("Add to store", [get_name_from_item_id(item_id) for item_id in item_id_list].join(","))
 
+    elif cmd == "next_research_step":
+        type = args[0] # 0: TYPE_AREA_51 ,  1: TYPE_ROBOTIC
+
+        save["privateState"]["researchStepNumber"][type] += 1
+        save["privateState"]["timeStampDoResearch"][type] = timestamp_now()
+
+        print("Research step for", ["Area 51", "Robotic Center"][type])
+
+    elif cmd == "research_buy_step_cash":
+        cash = args[0]
+        type = args[1] # 0: TYPE_AREA_51 ,  1: TYPE_ROBOTIC
+
+        save["privateState"]["timeStampDoResearch"][type] = 0
+
+        # Substract cash
+        save["playerInfo"]["cash"] = max(0, save["playerInfo"]["cash"] - cash)
+
+        print("Buy research step for", ["Area 51", "Robotic Center"][type])
+
+    elif cmd == "next_research_item":
+        type = args[0] # 0: TYPE_AREA_51 ,  1: TYPE_ROBOTIC
+
+        save["privateState"]["researchItemNumber"][type] += 1
+        save["privateState"]["researchStepNumber"][type] = 0
+        save["privateState"]["timeStampDoResearch"][type] = 0
+        
+        print("Finished research for", ["Area 51", "Robotic Center"][type])
+
     elif cmd == "flash_debug":
         cash = args[0]
         unknown = args[1]
@@ -313,6 +341,8 @@ def do_command(USERID, __1, cmd, args, __2):
             item_properties["xp"] = xp_gain
         else:
             item_properties["xp"] += xp_gain
+        
+        print("Added", xp_gain, "XP to", get_name_from_item_id(map["items"][str(item_index)]))
     
     else:
         print(f"Unhandled command '{cmd}' -> args", args)
