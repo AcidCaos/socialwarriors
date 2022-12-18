@@ -307,7 +307,7 @@ def do_command(USERID, __1, cmd, args, __2):
         save["privateState"]["researchItemNumber"][type] += 1
         save["privateState"]["researchStepNumber"][type] = 0
         save["privateState"]["timeStampDoResearch"][type] = 0
-        
+
         print("Finished research for", ["Area 51", "Robotic Center"][type])
 
     elif cmd == "flash_debug":
@@ -333,7 +333,7 @@ def do_command(USERID, __1, cmd, args, __2):
     elif cmd == "add_xp_unit":
         item_index = args[0]
         xp_gain = args[1]
-        # level = args[2]
+        level = args[2]
 
         map = save["maps"][0]
         item_properties = map["items"][str(item_index)][6]
@@ -341,8 +341,10 @@ def do_command(USERID, __1, cmd, args, __2):
             item_properties["xp"] = xp_gain
         else:
             item_properties["xp"] += xp_gain
-        
-        print("Added", xp_gain, "XP to", get_name_from_item_id(map["items"][str(item_index)]))
+
+        item_properties["level"] = level
+
+        print("Added", xp_gain, "XP to", get_name_from_item_id(map["items"][str(item_index)][0]))
     
     else:
         print(f"Unhandled command '{cmd}' -> args", args)
