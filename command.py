@@ -85,7 +85,7 @@ def do_command(USERID, __1, cmd, args, __2):
     elif cmd == "level_up":
         new_level = args[0]
 
-        xp_expected = get_xp_from_level(new_level)
+        xp_expected = get_xp_from_level(max(0, new_level - 1))
         map = save["maps"][0]
         map["level"] = new_level
         map["xp"] = max(xp_expected, map["xp"]) # Keep up with XP
@@ -111,12 +111,12 @@ def do_command(USERID, __1, cmd, args, __2):
 
         # TODO: Check that those values are actually the same
         if key == "id":
-            map ["idCurrentMission"] = int(value)
+            map["idCurrentMission"] = int(value)
         # TODO: What should be there in the first place?
-        if not questVars:
-            questVars = {}
+        if not map["currentQuestVars"]:
+            map["currentQuestVars"] = {}
         # TODO: Should it be type-parsed?
-        questVars[key] = value
+        map["currentQuestVars"][key] = value
         print(f"Set current quest {key} to '{value}'")
 
     elif cmd == "move":
@@ -172,6 +172,27 @@ def do_command(USERID, __1, cmd, args, __2):
         map["xp"] += xp_reward
 
         print("Killed", str(get_name_from_item_id(item_id)))
+
+    elif cmd == "batch_remove":
+        index_list = json.loads(args[0])
+
+        map = save["maps"][0]
+
+        # Delete items
+        for index in index_list:
+            del map["items"][str(index)]
+        
+        print(f"Removed {len(index_list)} items.")
+
+    elif cmd == "orient":
+        item_index = args[0]
+        orientation = args[1]
+
+        # XP Reward
+        map = save["maps"][0]
+        map["items"][str(item_index)][4] = int(orientation)
+
+        print("Rotate", str(get_name_from_item_id(map["items"][str(item_index)][0])))
 
     else:
         print(f"Unhandled command '{cmd}' -> args", args)
