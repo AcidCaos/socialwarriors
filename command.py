@@ -160,7 +160,20 @@ def do_command(USERID, __1, cmd, args, __2):
         name = str(get_name_from_item_id(map["items"][str(item_index)][0]))
         del map["items"][str(item_index)]
 
+        # TODO: Substract resources
+
         print(f"Remove {name}. Reason: {reason}")
+    
+    elif cmd == "kill":
+        item_index = args[0]
+        reason = args[1]
+        
+        # Delete item
+        map = save["maps"][0]
+        name = str(get_name_from_item_id(map["items"][str(item_index)][0]))
+        del map["items"][str(item_index)]
+
+        print(f"Kill {name}. Reason: {reason}")
     
     elif cmd == "kill_iid":
         item_id = args[0]
@@ -194,6 +207,113 @@ def do_command(USERID, __1, cmd, args, __2):
 
         print("Rotate", str(get_name_from_item_id(map["items"][str(item_index)][0])))
 
+    elif cmd == "expand":
+        expansion = args[0]
+
+        map = save["maps"][0]
+        map["expansions"] += [int(expansion)]
+        # TODO: Substract resources
+        print("Unlocked Expansion", expansion)
+
+    elif cmd == "store_item":
+        item_index = args[0]
+
+        map = save["maps"][0]
+        item_id = map["items"][str(item_index)][0]
+        name = str(get_name_from_item_id(item_id))
+
+        # Add to store
+        if str(item_id) not in map["store"]:
+            map["store"][str(item_id)] = 1
+        else:
+            map["store"][str(item_id)] += 1
+        
+        # Delete item from map
+        del map["items"][str(item_index)]
+
+        print(f"Store {name}.")
+    
+    elif cmd == "place_stored_item":
+        item_index = args[0]
+        item_id = args[1]
+        x = args[2]
+        y = args[3]
+        playerID = args[4]
+        frame = args[5]
+        unknown_autoactivable_bool = args[6]
+        unknown_imgIndex = args[7]
+
+        map = save["maps"][0]
+        name = str(get_name_from_item_id(item_id))
+
+        # Remove from store
+        if str(item_id) in map["store"]:
+            map["store"][str(item_id)] = max(0, map["store"][str(item_id)] - 1)
+
+        # Add to map
+        map["items"][str(item_index)] = [item_id, x, y, 0, 0, [], {}, playerID]
+
+        print(f"Placed stored {name}.")
+    
+    elif cmd == "sell_stored_item":
+        item_id = args[0]
+
+        map = save["maps"][0]
+        name = str(get_name_from_item_id(item_id))
+
+        # Remove from store
+        if str(item_id) in map["store"]:
+            map["store"][str(item_id)] = max(0, map["store"][str(item_id)] - 1)
+        
+        # TODO: Add resources
+
+        print(f"Sell stored {name}.")
+
+    elif cmd == "store_add_items":
+        item_id_list = args[0]
+
+        map = save["maps"][0]
+        # Add to store
+        for item_id in item_id_list:
+            if str(item_id) not in map["store"]:
+                map["store"][str(item_id)] = 1
+            else:
+                map["store"][str(item_id)] += 1
+
+        print("Add to store", [get_name_from_item_id(item_id) for item_id in item_id_list].join(","))
+
+    elif cmd == "flash_debug":
+        cash = args[0]
+        unknown = args[1]
+        xp = args[2]
+        gold = args[3]
+        oil = args[4]
+        steel = args[5]
+        wood = args[6]
+
+        map = save["maps"][0]
+        playerInfo = save["playerInfo"]
+
+        # Keep up with resources
+        playerInfo["cash"] = cash
+        map["xp"] = xp
+        map["gold"] = gold
+        map["oil"] = oil
+        map["steel"] = steel
+        map["wood"] = wood
+    
+    elif cmd == "add_xp_unit":
+        item_index = args[0]
+        xp_gain = args[1]
+        # level = args[2]
+
+        map = save["maps"][0]
+        item_properties = map["items"][str(item_index)][6]
+        if "xp" not in item_properties:
+            item_properties["xp"] = xp_gain
+        else:
+            item_properties["xp"] += xp_gain
+    
     else:
         print(f"Unhandled command '{cmd}' -> args", args)
         return
