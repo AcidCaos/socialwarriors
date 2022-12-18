@@ -39,12 +39,15 @@ print (" [+] Configuring server routes...")
 def login():
     # Log out previous session
     session.pop('USERID', default=None)
+    session.pop('GAMEVERSION', default=None)
     # Reload saves. Allows saves modification without server reset
     load_saved_villages()
     # If logging in, set session USERID, and go to play
     if request.method == 'POST':
         session['USERID'] = request.form['USERID']
+        session['GAMEVERSION'] = request.form['GAMEVERSION']
         print("[LOGIN] USERID:", request.form['USERID'])
+        print("[LOGIN] GAMEVERSION:", request.form['GAMEVERSION'])
         return redirect("/play.html")
     # Login page
     if request.method == 'GET':
@@ -55,17 +58,22 @@ def login():
 def play():
     if 'USERID' not in session:
         return redirect("/")
+    if 'GAMEVERSION' not in session:
+        return redirect("/")
 
     if session['USERID'] not in all_saves_userid():
         return redirect("/")
     
     USERID = session['USERID']
+    GAMEVERSION = session['GAMEVERSION']
     print("[PLAY] USERID:", USERID)
-    return render_template("play.html", save_info=save_info(USERID), serverTime=timestamp_now(), version=version_name)
+    print("[PLAY] GAMEVERSION:", GAMEVERSION)
+    return render_template("play.html", save_info=save_info(USERID), serverTime=timestamp_now(), version=version_name, GAMEVERSION=GAMEVERSION, SERVERIP=host, SERVERPORT=port)
 
 @app.route("/new.html")
 def new():
     session['USERID'] = new_village()
+    session['GAMEVERSION'] = "Basesec_1.5.4.swf"
     return redirect("play.html")
 
 @app.route("/crossdomain.xml")
