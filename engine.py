@@ -5,29 +5,23 @@ from get_game_config import get_attribute_from_item_id
 def timestamp_now() -> int:
     return int(time.time())
 
-def apply_cost(playerInfo: dict, map: dict, item_id: int) -> None:
-    costs_str = get_attribute_from_item_id(item_id, "costs")
-    if costs_str:
-        costs = json.loads(costs_str)
-        if "w" in costs:
-            map["wood"] = max(map["wood"] - costs["w"], 0)
-        if "g" in costs:
-            map["gold"] = max(map["gold"] - costs["g"], 0)
-        if "s" in costs:
-            map["steel"] = max(map["steel"] - costs["s"], 0)
-        if "c" in costs:
-            playerInfo["cash"] = max(playerInfo["cash"] - costs["c"], 0)
-        if "o" in costs:
-            map["oil"] = max(map["oil"] - costs["o"], 0)
+def apply_resources(save: dict, map: dict, resource: list) -> None:
+    # So these will be negative if the user used resources and positive if the user gained resources, we can detect cheats by checking if any are less than 0 after applying
+    unknown = resource[0]
+    xp = resource[1]
+    gold = resource[2]
+    wood = resource[3]
+    oil = resource[4]
+    steel = resource[5]
+    cash = resource[6]
+    mana = resource[7]
 
-def apply_collect(playerInfo: dict, map: dict, type: str, value: int):
-    if type == "w":
-        map["wood"] += value
-    if type == "g":
-        map["gold"] += value
-    if type == "s":
-        map["steel"] += value
-    if type == "c":
-        playerInfo["cash"] += value
-    if type == "o":
-        map["oil"] += value
+    map["xp"] = max(map["xp"] + xp, 0)
+    map["gold"] = max(map["gold"] + gold, 0)
+    map["wood"] = max(map["wood"] + wood, 0)
+    map["oil"] = max(map["oil"] + oil, 0)
+    map["steel"] = max(map["steel"] + steel, 0)
+    save["playerInfo"]["cash"] = max(save["playerInfo"]["cash"] + cash, 0)
+    save["privateState"]["mana"] = max(save["privateState"]["mana"] + mana, 0)
+
+    # print(f"\n [?] Resources changed\n    Unknown {unknown}\n    Xp {xp}\n    gold {gold}\n    Wood {wood}\n    Oil {oil}\n    Steel {steel}\n    Cash {cash}\n    Mana {mana}")
