@@ -44,15 +44,6 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         unknown = args[6]
         reason = args[7]
 
-        if reason == "b":
-            pass # we don't apply costs anymore since it's using apply_resources()
-
-            # Give player xp
-            #xp = int(get_attribute_from_item_id(item_id, "xp"))
-            #map["xp"] += xp
-            # Use up resources
-            # apply_cost(save["playerInfo"], map, item_id)
-
         # Add item to map
         map["items"][str(item_index)] = [item_id, x, y, 0, orientation, [], {}, playerID]
 
@@ -76,17 +67,12 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
     elif cmd == "complete_goal":
         goal_id = args[0]
 
-        # Reward
-        reward = get_attribute_from_goal_id(goal_id, "reward")
-        # map["gold"] += reward # not needed anymore
-        print(f"Goal '", get_attribute_from_goal_id(goal_id, "title"), "' completed and rewarded.", sep='')
+        print(f"Goal '", get_attribute_from_goal_id(goal_id, "title"), "' completed.", sep='')
 
     elif cmd == "level_up":
         new_level = args[0]
 
-        xp_expected = get_xp_from_level(max(0, new_level - 1))
         map["level"] = new_level
-        # map["xp"] = max(xp_expected, map["xp"]) # This caused a desync for example if the player has 349 xp but gained 3 xp they'd have 353 now but it showed 352 in game
         print("Level up! New level:", new_level)
 
     elif cmd == "set_quest_var":
@@ -142,15 +128,6 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         item = map["items"][str(item_index)]
         item_id = item[0]
 
-        # Apply collect - skipping because it's done already
-        # collect = int(get_attribute_from_item_id(item_id, "collect"))
-        # collect_type = get_attribute_from_item_id(item_id, "collect_type")
-        # collect_xp = int(get_attribute_from_item_id(item_id, "collect_xp"))
-        # max_collects = int(get_attribute_from_item_id(item_id, "max_collects"))
-        # 
-        # map["xp"] += collect_xp
-        # apply_collect(save["playerInfo"], map, collect_type, collect)
-
         print("Collect", str(get_name_from_item_id(item[0])))
     
     elif cmd == "sell":
@@ -183,10 +160,6 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
     elif cmd == "kill_iid":
         item_id = args[0]
         reason_str = args[1]
-
-        # # XP Reward
-        # xp_reward = int(get_attribute_from_item_id(item_id, "xp"))
-        # map["xp"] += xp_reward
 
         print("Killed", str(get_name_from_item_id(item_id)))
 
@@ -295,9 +268,6 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         type = args[1] # 0: TYPE_AREA_51 ,  1: TYPE_ROBOTIC
 
         save["privateState"]["timeStampDoResearch"][type] = 0
-
-        # # Substract cash - not needed anymore
-        # save["playerInfo"]["cash"] = max(0, save["playerInfo"]["cash"] - cash)
 
         print("Buy research step for", ["Area 51", "Robotic Center"][type])
 
