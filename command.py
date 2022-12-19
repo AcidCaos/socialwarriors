@@ -3,7 +3,7 @@ import json
 from sessions import session, save_session
 from get_game_config import get_name_from_item_id, get_attribute_from_item_id, get_attribute_from_goal_id, get_xp_from_level
 from constants import Constant
-from engine import timestamp_now, apply_resources
+from engine import timestamp_now, apply_resources, add_map_item, add_map_item_from_item
 
 def command(USERID, data):
     first_number = data["first_number"]
@@ -29,6 +29,7 @@ def command(USERID, data):
 
 def do_command(USERID, map_id, cmd, args, resources_changed):
     save = session(USERID)
+    time_now = timestamp_now()
     map = save["maps"][map_id]
     print (" [+] COMMAND: ", cmd, "(", args, ") -> ", sep='', end='')
 
@@ -44,8 +45,7 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         unknown = args[6]
         reason = args[7]
 
-        # Add item to map
-        map["items"][str(item_index)] = [item_id, x, y, 0, orientation, [], {}, playerID]
+        add_map_item(map, item_index, item_id, x, y, orientation=orientation, player=playerID)
 
         print("Add", str(get_name_from_item_id(item_id)), "at", f"({x},{y})")
         return
@@ -219,17 +219,16 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         x = args[2]
         y = args[3]
         playerID = args[4]
-        frame = args[5]
+        frame = args[5] # one of these might be timestamp
         unknown_autoactivable_bool = args[6]
-        unknown_imgIndex = args[7]
+        unknown_imgIndex = args[7] # one of these might be timestamp
         name = str(get_name_from_item_id(item_id))
 
         # Remove from store
         if str(item_id) in map["store"]:
             map["store"][str(item_id)] = max(0, map["store"][str(item_id)] - 1)
 
-        # Add to map
-        map["items"][str(item_index)] = [item_id, x, y, 0, 0, [], {}, playerID]
+        add_map_item(map, item_index, item_id, x, y)
 
         print(f"Placed stored {name}.")
     
@@ -259,7 +258,7 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         type = args[0] # 0: TYPE_AREA_51 ,  1: TYPE_ROBOTIC
 
         save["privateState"]["researchStepNumber"][type] += 1
-        save["privateState"]["timeStampDoResearch"][type] = timestamp_now()
+        save["privateState"]["timeStampDoResearch"][type] = time_now
 
         print("Research step for", ["Area 51", "Robotic Center"][type])
 
@@ -329,15 +328,14 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
             y = args[3]
             playerID = args[4] # player team
 
-            # Add item to map
-            map["items"][str(item_index)] = [item_id, x, y, 0, 0, [], {}, playerID]
+            map_add_item(map, item_index, item_id, x, y, player=playerID)
 
             print("Won", str(get_name_from_item_id(item_id)))
         else:
             print("Won resources")
 
         # Disable Monday bonus until next Monday
-        save["privateState"]["timeStampMondayBonus"] = timestamp_now()
+        save["privateState"]["timeStampMondayBonus"] = time_now
 
     elif cmd == "push_unit":
         item_id = args[0]
@@ -368,8 +366,8 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         item[1] = x
         item[2] = y
         item[7] = playerID
-        # Add item to map
-        map["items"][str(item_index)] = item
+
+        add_map_item_from_item(map, item_index, item)
 
         print("Popped", str(get_name_from_item_id(item[0])), "from", str(get_name_from_item_id(dest[0])))
 
@@ -380,15 +378,21 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         item = map["items"][str(item_id)]
 
         if activate > 0:
+            item[3] = time_now
             item[6]["cp"] = args[1]
             print("Activated", str(get_name_from_item_id(item[0])), "Set CP to", str(activate))
         else:
+            item[3] = time_now
             item[6] = {}
             print("Deactivated", str(get_name_from_item_id(item[0])))
 
-        # I give up on this, I really don't know how the building timer for collecting resources from a farm works like
-        # So the variable collected_at is definitely used but I'm not sure how it's stored on the map. It seems to be an ObfuscatedNumber dunno why, thanks I guess...
-        # TODO: FIX THE DAMN TIMER
+    elif cmd == "collect_mission":
+        next_mission = args[0]
+        map["idCurrentMission"] = next_mission
+        map["timestampLastChapter"] = time_now
+        map["currentQuestVars"] = {}
+
+        print("Advanced to mission", str(next_mission))
 
     else:
         print(f"Unhandled command '{cmd}' -> args", args)
