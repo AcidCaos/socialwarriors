@@ -339,6 +339,40 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         # Disable Monday bonus until next Monday
         save["privateState"]["timeStampMondayBonus"] = timestamp_now()
 
+    elif cmd == "push_unit":
+        item_id = args[0]
+        item_dest = args[1] # where item_id is pushed to
+
+        # pop item from map
+        item = map["items"].pop(str(item_id))
+        # push into item
+        dest = map["items"][str(item_dest)]
+        dest[5].append(item)
+
+        print("Pushed", str(get_name_from_item_id(item[0])), "to", str(get_name_from_item_id(dest[0])))
+
+    elif cmd == "pop_unit":
+        item_dest = args[0]
+        item_index = args[1]
+        item_id = args[2]
+        x = args[3]
+        y = args[4]
+        playerID = args[5] # player team
+        unknown = args[6] # unknown
+
+        dest = map["items"][str(item_dest)]
+        # pop item from dest
+        item = dest[5].pop()
+        # modify item data
+        item[0] = item_id
+        item[1] = x
+        item[2] = y
+        item[7] = playerID
+        # Add item to map
+        map["items"][str(item_index)] = item
+
+        print("Popped", str(get_name_from_item_id(item[0])), "from", str(get_name_from_item_id(dest[0])))
+
     else:
         print(f"Unhandled command '{cmd}' -> args", args)
         return
