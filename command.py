@@ -373,6 +373,23 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
 
         print("Popped", str(get_name_from_item_id(item[0])), "from", str(get_name_from_item_id(dest[0])))
 
+    elif cmd == "activate":
+        item_id = args[0]
+        activate = args[1]
+
+        item = map["items"][str(item_id)]
+
+        if activate > 0:
+            item[6]["cp"] = args[1]
+            print("Activated", str(get_name_from_item_id(item_id)), "Set CP to", str(activate))
+        else:
+            item[6] = {}
+            print("Deactivated", str(get_name_from_item_id(item_id)))
+
+        # I give up on this, I really don't know how the building timer for collecting resources from a farm works like
+        # So the variable collected_at is definitely used but I'm not sure how it's stored on the map. It seems to be an ObfuscatedNumber dunno why, thanks I guess...
+        # TODO: FIX THE DAMN TIMER
+
     else:
         print(f"Unhandled command '{cmd}' -> args", args)
         return
