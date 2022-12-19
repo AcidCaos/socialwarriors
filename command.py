@@ -320,7 +320,25 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
 
     elif cmd == "set_variables":
         pass
-    
+
+    elif cmd == "weekly_reward":
+        if len(args) > 4:
+            item_index = args[0]
+            item_id = args[1]
+            x = args[2]
+            y = args[3]
+            playerID = args[4] # player team
+
+            # Add item to map
+            map["items"][str(item_index)] = [item_id, x, y, 0, 0, [], {}, playerID]
+
+            print("Won", str(get_name_from_item_id(item_id)))
+        else:
+            print("Won resources")
+
+        # Disable Monday bonus until next Monday
+        save["privateState"]["timeStampMondayBonus"] = timestamp_now()
+
     else:
         print(f"Unhandled command '{cmd}' -> args", args)
         return
