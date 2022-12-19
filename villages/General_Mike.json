@@ -1,22 +1,22 @@
 {
-    "playerInfo": {
-        "pid": "100000031",
-        "name": "General",
-        "pic": "",
-        "cash": 52,
-        "completed_tutorial": 1,
-        "default_map": 0,
-        "map_names": [
-            "General"
-        ],
-        "map_sizes": [
-            0
-        ],
-        "world_id": null,
-        "sp_ref_uid": 1000,
-        "sp_ref_cat_install": "ts",
-        "last_logged_in": 0
-    },
+	"playerInfo": {
+		"pid": "100000030",
+		"name": "General",
+		"pic": "",
+		"cash": 52,
+		"completed_tutorial": 1,
+		"default_map": 0,
+		"map_names": [
+			"General"
+		],
+		"map_sizes": [
+			0
+		],
+		"world_id": null,
+		"sp_ref_uid": 1000,
+		"sp_ref_cat_install": "ts",
+		"last_logged_in": 0
+	},
     "maps": [
         {
             "id": 0,
