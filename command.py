@@ -121,12 +121,13 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
     elif cmd == "collect":
         item_index = args[0]
 
-        if str(item_index) not in map["items"]:
+        item = map_get_item(map, item_index)
+        if not item:
             print("Error: item not found.")
             return
-        
-        item = map["items"][str(item_index)]
-        item_id = item[0]
+
+        # Update collect timers
+        item[3] = time_now
 
         print("Collect", str(get_name_from_item_id(item[0])))
     
