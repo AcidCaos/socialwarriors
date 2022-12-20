@@ -3,7 +3,7 @@ import json
 from sessions import session, save_session
 from get_game_config import get_name_from_item_id, get_attribute_from_item_id, get_attribute_from_goal_id, get_xp_from_level, get_weekly_reward_length
 from constants import Constant
-from engine import timestamp_now, apply_resources, map_add_item, map_add_item_from_item, map_get_item, map_pop_item, map_delete_item, push_unit, pop_unit
+from engine import timestamp_now, apply_resources, map_add_item, map_add_item_from_item, map_get_item, map_pop_item, map_delete_item, push_unit, pop_unit, add_store_item, remove_store_item
 
 def command(USERID, data):
     first_number = data["first_number"]
@@ -202,11 +202,7 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         item_id = map["items"][str(item_index)][0]
         name = str(get_name_from_item_id(item_id))
 
-        # Add to store
-        if str(item_id) not in map["store"]:
-            map["store"][str(item_id)] = 1
-        else:
-            map["store"][str(item_id)] += 1
+        add_store_item(map, item_id)
         
         # Delete item from map
         del map["items"][str(item_index)]
@@ -224,9 +220,7 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         unknown_imgIndex = args[7] # one of these might be timestamp
         name = str(get_name_from_item_id(item_id))
 
-        # Remove from store
-        if str(item_id) in map["store"]:
-            map["store"][str(item_id)] = max(0, map["store"][str(item_id)] - 1)
+        remove_store_item(map, item_id)
 
         map_add_item(map, item_index, item_id, x, y)
 
@@ -236,9 +230,7 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         item_id = args[0]
         name = str(get_name_from_item_id(item_id))
 
-        # Remove from store
-        if str(item_id) in map["store"]:
-            map["store"][str(item_id)] = max(0, map["store"][str(item_id)] - 1)
+        remove_store_item(map, item_id)
 
         print(f"Sell stored {name}.")
 
@@ -247,10 +239,7 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
 
         # Add to store
         for item_id in item_id_list:
-            if str(item_id) not in map["store"]:
-                map["store"][str(item_id)] = 1
-            else:
-                map["store"][str(item_id)] += 1
+            add_store_item(map, item_id)
 
         print("Add to store", ", ".join([get_name_from_item_id(item_id) for item_id in item_id_list]))
 
@@ -393,6 +382,26 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         map["currentQuestVars"] = {}
 
         print("Advanced to mission", str(next_mission))
+
+    elif cmd == "win_daily_bonus":
+        item = args[0]
+        next_id = args[1] + 1
+
+        privateState = save["privateState"]
+
+        # Advance & Reset dailies
+        if next_id >= 5:
+            next_id = 1
+
+        privateState["timestampLastBonus"] = time_now
+        privateState["bonusNextId"] = next_id
+
+        # Daily gives an item
+        if item > 0:
+            add_store_item(map, item)
+            print("Put", str(get_name_from_item_id(item)), "in storage")
+        else:
+            print("Rewarded resources")
 
     elif cmd == "fast_forward":
         seconds = args[0]

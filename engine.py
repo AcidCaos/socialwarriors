@@ -30,6 +30,22 @@ def push_unit(unit: dict, building: dict):
 def pop_unit(building: dict):
     return building[5].pop()
 
+def add_store_item(map: dict, item: int, quantity: int = 1):
+    itemstr = str(item)
+    if itemstr not in map["store"]:
+        map["store"][itemstr] = quantity
+    else:
+        map["store"][itemstr] += quantity
+
+def remove_store_item(map: dict, item: int, quantity: int = 1):
+    itemstr = str(item)
+    if itemstr in map["store"]:
+        new_quantity = map["store"][itemstr] - quantity
+        if new_quantity <= 0:
+            del map["store"][itemstr]
+        else:
+            map["store"][itemstr] = new_quantity
+
 def apply_resources(save: dict, map: dict, resource: list):
     # So these will be negative if the user used resources and positive if the user gained resources, we can detect cheats by checking if any are less than 0 after applying
     unknown = resource[0]
