@@ -59,6 +59,22 @@ def remove_store_item(map: dict, item: int, quantity: int = 1):
         else:
             map["store"][itemstr] = new_quantity
 
+def bought_unit_add(save: dict, item: int):
+    boughtUnits = save["privateState"]["boughtUnits"]
+    if item not in boughtUnits:
+        boughtUnits.append(item)
+
+def unit_collection_complete(save: dict, collection: int):
+    unitCollectionsCompleted = save["privateState"]["unitCollectionsCompleted"]
+    if collection not in unitCollectionsCompleted:
+        unitCollectionsCompleted.append(collection)
+
+def set_goals(privateState: dict, goal: int, progress: list):
+    goals = privateState["goals"]
+    while goal >= len(goals):
+        goals.append(None)
+    goals[goal] = progress
+
 def reset_trades(save: dict):
     # Resets market trades if it's a new day
     now = timestamp_now()

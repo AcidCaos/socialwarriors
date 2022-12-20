@@ -3,7 +3,7 @@ import json
 from sessions import session, save_session
 from get_game_config import get_name_from_item_id, get_attribute_from_item_id, get_attribute_from_goal_id, get_xp_from_level, get_weekly_reward_length
 from constants import Constant
-from engine import timestamp_now, apply_resources, map_add_item, map_add_item_from_item, map_get_item, map_pop_item, map_delete_item, push_unit, pop_unit, add_store_item, remove_store_item
+from engine import timestamp_now, apply_resources, map_add_item, map_add_item_from_item, map_get_item, map_pop_item, map_delete_item, push_unit, pop_unit, add_store_item, remove_store_item, bought_unit_add, unit_collection_complete, set_goals
 
 def command(USERID, data):
     first_number = data["first_number"]
@@ -45,6 +45,9 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         unknown = args[6]
         reason = args[7]
 
+        if playerID == 1:
+            bought_unit_add(save, item_id)
+
         map_add_item(map, item_index, item_id, x, y, orientation=orientation, player=playerID)
 
         print("Add", str(get_name_from_item_id(item_id)), "at", f"({x},{y})")
@@ -61,7 +64,9 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
     elif cmd == "set_goals":
         goal_id = args[0]
         progress = json.loads(args[1]) # format: [visited, currentStep]
-        save["privateState"]["goals"][goal_id] = progress
+
+        set_goals(save["privateState"], goal_id, progress)
+
         print(f"Goal '", get_attribute_from_goal_id(goal_id, "title"), "' progressed.", sep='')
     
     elif cmd == "complete_goal":
@@ -222,6 +227,7 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
 
         remove_store_item(map, item_id)
         map_add_item(map, item_index, item_id, x, y)
+        bought_unit_add(save, item_id)
 
         print(f"Placed stored {name}.")
     
@@ -239,6 +245,7 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         # Add to store
         for item_id in item_id_list:
             add_store_item(map, item_id)
+            bought_unit_add(save, item_id)
 
         print("Add to store", ", ".join([get_name_from_item_id(item_id) for item_id in item_id_list]))
 
@@ -322,6 +329,7 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
             playerID = args[4] # player team
 
             map_add_item(map, item_index, item_id, x, y, player=playerID)
+            bought_unit_add(save, item_id)
 
             print("Won", str(get_name_from_item_id(item_id)))
         else:
@@ -420,6 +428,7 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
 
         # Daily gives an item
         if item > 0:
+            bought_unit_add(save, item_id)
             add_store_item(map, item)
             print("Put", str(get_name_from_item_id(item)), "in storage")
         else:
@@ -434,6 +443,19 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         map["timestampLastTrade"] = time_now
 
         print(f"Remaining trades: {20-num_trades}")
+
+    elif cmd == "buy_stored_item_cash":
+        item_id = args[0]
+
+        bought_unit_add(save, item_id)
+        add_store_item(map, item_id)
+        print("Bought", str(get_name_from_item_id(item_id)), "from unit collection")
+
+    elif cmd == "unit_collections_completed":
+        collection_id = args[0]
+
+        unit_collection_complete(save, collection_id)
+        print("Completed unit collection", str(collection_id))
 
     elif cmd == "fast_forward":
         seconds = args[0]
