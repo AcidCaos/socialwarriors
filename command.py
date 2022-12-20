@@ -108,12 +108,12 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         frame = args[3]
         string = args[4]
 
-        if str(item_index) not in map["items"]:
+        item = map_get_item(map, item_index)
+        if not item:
             print("Error: item not found.")
             return
 
         # Move item
-        item = map["items"][str(item_index)]
         item[1] = x
         item[2] = y
         print("Move", str(get_name_from_item_id(item[0])), "to", f"({x},{y})")
@@ -135,13 +135,13 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         item_index = args[0]
         reason = args[1]
 
-        if str(item_index) not in map["items"]:
+        item = map_get_item(map, item_index)
+        if not item:
             print("Error: item not found.")
             return
         
-        # Delete item
-        name = str(get_name_from_item_id(map["items"][str(item_index)][0]))
-        del map["items"][str(item_index)]
+        name = str(get_name_from_item_id(item[0]))
+        map_delete_item(map, item_index)
 
         print(f"Remove {name}. Reason: {reason}")
     
@@ -149,12 +149,13 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         item_index = args[0]
         reason = args[1]
         
-        if str(item_index) not in map["items"]:
+        item = map_get_item(map, item_index)
+        if not item:
             print("Error: item not found.")
+            return
         
-        # Delete item
-        name = str(get_name_from_item_id(map["items"][str(item_index)][0]))
-        del map["items"][str(item_index)]
+        name = str(get_name_from_item_id(item[0]))
+        map_delete_item(map, item_index)
 
         print(f"Kill {name}. Reason: {reason}")
     
@@ -169,8 +170,7 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
 
         # Delete items
         for index in index_list:
-            if str(index) in map["items"]:
-                del map["items"][str(index)]
+            map_delete_item(map, index)
         
         print(f"Removed {len(index_list)} items.")
 
@@ -178,13 +178,14 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         item_index = args[0]
         orientation = args[1]
 
-        if str(item_index) not in map["items"]:
+        item = map_get_item(map, item_index)
+        if not item:
             print("Error: item not found.")
             return
         
-        map["items"][str(item_index)][4] = int(orientation)
+        item[4] = int(orientation)
 
-        print("Rotate", str(get_name_from_item_id(map["items"][str(item_index)][0])))
+        print("Rotate", str(get_name_from_item_id(item[0])))
 
     elif cmd == "expand":
         expansion = args[0]
@@ -196,17 +197,15 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
     elif cmd == "store_item":
         item_index = args[0]
 
-        if str(item_index) not in map["items"]:
+        item = map_pop_item(map, item_index)
+        if not item:
             print("Error: item not found.")
             return
 
-        item_id = map["items"][str(item_index)][0]
+        item_id = item[0]
         name = str(get_name_from_item_id(item_id))
 
         add_store_item(map, item_id)
-        
-        # Delete item from map
-        del map["items"][str(item_index)]
 
         print(f"Store {name}.")
     
@@ -222,7 +221,6 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         name = str(get_name_from_item_id(item_id))
 
         remove_store_item(map, item_id)
-
         map_add_item(map, item_index, item_id, x, y)
 
         print(f"Placed stored {name}.")
@@ -296,16 +294,21 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         if len(args) > 2:
             level = args[2]
         
-        item_properties = map["items"][str(item_index)][6]
-        if "xp" not in item_properties:
-            item_properties["xp"] = xp_gain
+        item = map_get_item(map, item_index)
+        if not item:
+            print("Error: item not found.")
+            return
+
+        attr = item[6]
+        if "xp" not in attr:
+            attr["xp"] = xp_gain
         else:
-            item_properties["xp"] += xp_gain
+            attr["xp"] += xp_gain
 
         if level:
-            item_properties["level"] = level
+            attr["level"] = level
 
-        print("Added", xp_gain, "XP to", get_name_from_item_id(map["items"][str(item_index)][0]))
+        print("Added", xp_gain, "XP to", get_name_from_item_id(item[0]))
 
     elif cmd == "set_variables":
         pass
@@ -335,6 +338,14 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
 
         unit = map_pop_item(map, index_unit)
         building = map_get_item(map, index_building)
+
+        if not unit:
+            print("Error: unit not found.")
+            return
+        if not building:
+            print("Error: building not found.")
+            return
+
         push_unit(unit, building)
 
         print("Pushed", str(get_name_from_item_id(unit[0])), "to", str(get_name_from_item_id(building[0])))
@@ -349,7 +360,14 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         unknown = args[6] # unknown
 
         building = map_get_item(map, index_building)
+        if not building:
+            print("Error: building not found.")
+            return
+
         unit = pop_unit(building)
+        if not unit:
+            print("Error: no units in building.")
+            return
 
         # modify item data
         unit[0] = item_id
@@ -365,7 +383,10 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         item_id = args[0]
         activate = args[1]
 
-        item = map["items"][str(item_id)]
+        item = map_get_item(map, item_id)
+        if not item:
+            print("Error: item not found.")
+            return
 
         if activate > 0:
             item[3] = time_now

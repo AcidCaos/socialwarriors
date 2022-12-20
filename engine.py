@@ -16,19 +16,31 @@ def map_add_item_from_item(map: dict, index: int, item: list):
     map["items"][str(index)] = item
 
 def map_get_item(map: dict, index: int):
-    return map["items"][str(index)]
+    itemstr = str(index)
+    if itemstr not in map["items"]:
+        return None
+    return map["items"][itemstr]
 
 def map_pop_item(map: dict, index: int):
-    return map["items"].pop(str(index))
+    itemstr = str(index)
+    if itemstr not in map["items"]:
+        return None
+    return map["items"].pop(itemstr)
 
 def map_delete_item(map: dict, index: int):
-    del map["items"][str(index)]
+    itemstr = str(index)
+    if itemstr not in map["items"]:
+        return None
+    del map["items"][str(itemstr)]
 
 def push_unit(unit: dict, building: dict):
     building[5].append(unit)
 
 def pop_unit(building: dict):
-    return building[5].pop()
+    if len(building[5]) > 0:
+        return building[5].pop()
+    else:
+        return None
 
 def add_store_item(map: dict, item: int, quantity: int = 1):
     itemstr = str(item)
