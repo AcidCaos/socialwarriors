@@ -420,7 +420,7 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         privateState = save["privateState"]
 
         # Advance & Reset dailies
-        if next_id >= 5:
+        if next_id > 5:
             next_id = 1
 
         privateState["timestampLastBonus"] = time_now
@@ -428,7 +428,7 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
 
         # Daily gives an item
         if item > 0:
-            bought_unit_add(save, item_id)
+            bought_unit_add(save, item)
             add_store_item(map, item)
             print("Put", str(get_name_from_item_id(item)), "in storage")
         else:
