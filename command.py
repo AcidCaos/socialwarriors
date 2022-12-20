@@ -13,6 +13,8 @@ def command(USERID, data):
     accessToken = data["accessToken"]
     commands = data["commands"]
 
+    # print(f"Number of commands to execute: {len(commands)}")
+
     for i, comm in enumerate(commands):
         map_id = comm[0]
         cmd = comm[1]
@@ -25,6 +27,7 @@ def command(USERID, data):
         # print(f"resources_changed = {comm[3]}") # So this seems to be resource modifications, because some commands don't send any args, like weekly_reward and set_variables
 
         do_command(USERID, map_id, cmd, args, resources_changed)
+
     save_session(USERID) # Save session
 
 def do_command(USERID, map_id, cmd, args, resources_changed):
@@ -273,6 +276,15 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         save["privateState"]["timeStampDoResearch"][type] = 0
 
         print("Finished research for", ["Area 51", "Robotic Center"][type])
+
+    elif cmd == "reset_research_item":
+        type = args[0] # 0: TYPE_AREA_51 ,  1: TYPE_ROBOTIC
+
+        save["privateState"]["researchItemNumber"][type] = 0
+        save["privateState"]["researchStepNumber"][type] = 0
+        save["privateState"]["timeStampDoResearch"][type] = 0
+
+        print("Reset research for", ["Area 51", "Robotic Center"][type])
 
     elif cmd == "flash_debug":
         cash = args[0]
