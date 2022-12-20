@@ -35,6 +35,7 @@ def map_delete_item(map: dict, index: int):
 
 def push_unit(unit: dict, building: dict):
     building[5].append(unit)
+    building[3] = timestamp_now()
 
 def pop_unit(building: dict):
     if len(building[5]) > 0:
