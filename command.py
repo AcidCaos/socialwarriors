@@ -394,6 +394,39 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
 
         print("Advanced to mission", str(next_mission))
 
+    elif cmd == "fast_forward":
+        seconds = args[0]
+
+        privateState = save["privateState"]
+
+        map["timestamp"] = max(0, map["timestamp"] - seconds)
+        map["timestampLastChapter"] = max(0, map["timestampLastChapter"] - seconds)
+        map["timestampLastTreasure"] = max(0, map["timestampLastTreasure"] - seconds)
+        map["timestampLastTrade"] = max(0, map["timestampLastTrade"] - seconds)
+        privateState["timestampLastBonus"] = max(0, privateState["timestampLastBonus"] - seconds)
+        privateState["timeStampMondayBonus"] = max(0, privateState["timeStampMondayBonus"] - seconds)
+        privateState["timestampLastAllianceBonus"] = max(0, privateState["timestampLastAllianceBonus"] - seconds)
+        privateState["timeStampDartsReset"] = max(0, privateState["timeStampDartsReset"] - seconds)
+        privateState["timeStampDartsNewFree"] = max(0, privateState["timeStampDartsNewFree"] - seconds)
+
+        # research timers
+        research_timers = privateState["timeStampDoResearch"]
+        num_research_timers = len(research_timers)
+        i = 0
+        while i < num_research_timers:
+            research_timers[i] = max(0, research_timers[i] - seconds)
+            i += 1
+
+        # map items
+        items = map["items"]
+        for index in items:
+            data = items[index]
+            data[3] = max(0, data[3] - seconds)
+
+        # TODO: FF map["questTimes"]
+
+        print(f"Fast forwarded {seconds} seconds")
+
     else:
         print(f"Unhandled command '{cmd}' -> args", args)
         return
