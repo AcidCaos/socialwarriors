@@ -1,7 +1,7 @@
 import json
 
 from sessions import session, save_session
-from get_game_config import get_name_from_item_id, get_attribute_from_item_id, get_attribute_from_goal_id, get_xp_from_level
+from get_game_config import get_name_from_item_id, get_attribute_from_item_id, get_attribute_from_goal_id, get_xp_from_level, get_weekly_reward_length
 from constants import Constant
 from engine import timestamp_now, apply_resources, map_add_item, map_add_item_from_item, map_get_item, map_pop_item, map_delete_item, push_unit, pop_unit
 
@@ -336,6 +336,8 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
 
         # Disable Monday bonus until next Monday
         save["privateState"]["timeStampMondayBonus"] = time_now
+        # Advance Monday bonus
+        save["privateState"]["weeklyRewardIndex"] = (save["privateState"]["weeklyRewardIndex"] + 1) % get_weekly_reward_length()
 
     elif cmd == "push_unit":
         index_unit = args[0]

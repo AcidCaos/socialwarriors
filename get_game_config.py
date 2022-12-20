@@ -122,3 +122,18 @@ def get_goal_from_id(id: int) -> dict:
 def get_attribute_from_goal_id(id: int, attribute_name: str) -> str:
     goal = get_goal_from_id(id)
     return goal[attribute_name] if goal and attribute_name in goal else None
+
+################################
+# WEEKLY REWARD (MONDAY BONUS) #
+################################
+
+def get_weekly_reward_length() -> int:
+    # This would be better if it was called at the start, instead of being calculated every time
+    rewards = __game_config["globals"]["MONDAY_BONUS_REWARDS"]
+    length = 1
+    for reward in rewards:
+        value = reward["value"]
+        if type(value) == list:
+            length = max(length, len(value))
+
+    return length
