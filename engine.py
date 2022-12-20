@@ -2,16 +2,35 @@ import time
 import json
 from get_game_config import get_attribute_from_item_id
 
-def timestamp_now() -> int:
+def timestamp_now():
     return int(time.time())
 
-def add_map_item(map: dict, index: int, item: int, x: int, y: int, orientation: int = 0, timestamp: int = timestamp_now(), attr: dict = {}, store: list = [], player: int = 1):
+def map_add_item(map: dict, index: int, item: int, x: int, y: int, orientation: int = 0, timestamp: int = timestamp_now(), attr: dict = None, store: list = None, player: int = 1):
+    if not attr:
+        attr = {}
+    if not store:
+        store = []
     map["items"][str(index)] = [item, x, y, timestamp, orientation, store, attr, player]
 
-def add_map_item_from_item(map: dict, index: int, item: list):
+def map_add_item_from_item(map: dict, index: int, item: list):
     map["items"][str(index)] = item
 
-def apply_resources(save: dict, map: dict, resource: list) -> None:
+def map_get_item(map: dict, index: int):
+    return map["items"][str(index)]
+
+def map_pop_item(map: dict, index: int):
+    return map["items"].pop(str(index))
+
+def map_delete_item(map: dict, index: int):
+    del map["items"][str(index)]
+
+def push_unit(unit: dict, building: dict):
+    building[5].append(unit)
+
+def pop_unit(building: dict):
+    return building[5].pop()
+
+def apply_resources(save: dict, map: dict, resource: list):
     # So these will be negative if the user used resources and positive if the user gained resources, we can detect cheats by checking if any are less than 0 after applying
     unknown = resource[0]
     xp = resource[1]

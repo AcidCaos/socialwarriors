@@ -3,7 +3,7 @@ import json
 from sessions import session, save_session
 from get_game_config import get_name_from_item_id, get_attribute_from_item_id, get_attribute_from_goal_id, get_xp_from_level
 from constants import Constant
-from engine import timestamp_now, apply_resources, add_map_item, add_map_item_from_item
+from engine import timestamp_now, apply_resources, map_add_item, map_add_item_from_item, map_get_item, map_pop_item, map_delete_item, push_unit, pop_unit
 
 def command(USERID, data):
     first_number = data["first_number"]
@@ -45,7 +45,7 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         unknown = args[6]
         reason = args[7]
 
-        add_map_item(map, item_index, item_id, x, y, orientation=orientation, player=playerID)
+        map_add_item(map, item_index, item_id, x, y, orientation=orientation, player=playerID)
 
         print("Add", str(get_name_from_item_id(item_id)), "at", f"({x},{y})")
         return
@@ -228,7 +228,7 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         if str(item_id) in map["store"]:
             map["store"][str(item_id)] = max(0, map["store"][str(item_id)] - 1)
 
-        add_map_item(map, item_index, item_id, x, y)
+        map_add_item(map, item_index, item_id, x, y)
 
         print(f"Placed stored {name}.")
     
@@ -338,38 +338,36 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         save["privateState"]["timeStampMondayBonus"] = time_now
 
     elif cmd == "push_unit":
-        item_id = args[0]
-        item_dest = args[1] # where item_id is pushed to
+        index_unit = args[0]
+        index_building = args[1]
 
-        # pop item from map
-        item = map["items"].pop(str(item_id))
-        # push into item
-        dest = map["items"][str(item_dest)]
-        dest[5].append(item)
+        unit = map_pop_item(map, index_unit)
+        building = map_get_item(map, index_building)
+        push_unit(unit, building)
 
-        print("Pushed", str(get_name_from_item_id(item[0])), "to", str(get_name_from_item_id(dest[0])))
+        print("Pushed", str(get_name_from_item_id(unit[0])), "to", str(get_name_from_item_id(building[0])))
 
     elif cmd == "pop_unit":
-        item_dest = args[0]
-        item_index = args[1]
+        index_building = args[0]
+        index_unit = args[1]
         item_id = args[2]
         x = args[3]
         y = args[4]
         playerID = args[5] # player team
         unknown = args[6] # unknown
 
-        dest = map["items"][str(item_dest)]
-        # pop item from dest
-        item = dest[5].pop()
+        building = map_get_item(map, index_building)
+        unit = pop_unit(building)
+
         # modify item data
-        item[0] = item_id
-        item[1] = x
-        item[2] = y
-        item[7] = playerID
+        unit[0] = item_id
+        unit[1] = x
+        unit[2] = y
+        unit[7] = playerID
 
-        add_map_item_from_item(map, item_index, item)
+        map_add_item_from_item(map, index_unit, unit)
 
-        print("Popped", str(get_name_from_item_id(item[0])), "from", str(get_name_from_item_id(dest[0])))
+        print("Popped", str(get_name_from_item_id(unit[0])), "from", str(get_name_from_item_id(building[0])))
 
     elif cmd == "activate":
         item_id = args[0]
