@@ -58,6 +58,14 @@ def remove_store_item(map: dict, item: int, quantity: int = 1):
         else:
             map["store"][itemstr] = new_quantity
 
+def reset_trades(save: dict):
+    # Resets market trades if it's a new day
+    now = timestamp_now()
+    for map in save["maps"]:
+        last_trade = map["timestampLastTrade"]
+        if now // 86400 != last_trade // 86400:
+            map["numTradesDone"] = 0
+
 def apply_resources(save: dict, map: dict, resource: list):
     # So these will be negative if the user used resources and positive if the user gained resources, we can detect cheats by checking if any are less than 0 after applying
     unknown = resource[0]

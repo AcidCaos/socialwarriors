@@ -425,6 +425,16 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         else:
             print("Rewarded resources")
 
+    elif cmd == "trade_resource":
+        resource_type = args[0]
+        sold = args[1] # 1 if sold, 2 if bought
+
+        num_trades = map["numTradesDone"] + 1
+        map["numTradesDone"] = min(20, num_trades)
+        map["timestampLastTrade"] = time_now
+
+        print(f"Remaining trades: {20-num_trades}")
+
     elif cmd == "fast_forward":
         seconds = args[0]
 

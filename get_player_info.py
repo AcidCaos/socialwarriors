@@ -1,10 +1,12 @@
 from sessions import session, neighbors, neighbor_session
-from engine import timestamp_now
+from engine import timestamp_now, reset_trades
 
 def get_player_info(USERID):
     # Update last logged in
     ts_now = timestamp_now()
     session(USERID)["playerInfo"]["last_logged_in"] = ts_now
+    # Reset trades if possible
+    reset_trades(session(USERID))
     # player
     player_info = {
         "result": "ok",
@@ -15,6 +17,7 @@ def get_player_info(USERID):
         "privateState": session(USERID)["privateState"],
         "neighbors": neighbors(USERID)
     }
+	
     return player_info
 
 def get_neighbor_info(userid, map_number):
