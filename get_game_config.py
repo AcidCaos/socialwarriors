@@ -61,6 +61,9 @@ def patch_game_config():
 
     remove_duplicate_items()
 
+print (" [+] Applying config patches and mods...")
+patch_game_config()
+
 def get_game_config() -> dict:
     return __game_config
 
