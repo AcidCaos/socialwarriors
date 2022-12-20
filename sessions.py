@@ -137,17 +137,17 @@ def neighbor_session(USERID: str) -> dict:
 def neighbors(USERID: str):
     neighbors = []
     # static villages
-    for key in __villages:
-        vill = __villages[key]
-        if vill["playerInfo"]["pid"] != '100000031': # general Mike
-            neigh = vill["playerInfo"]
-            neigh["xp"] = vill["maps"][0]["xp"]
-            neigh["level"] = vill["maps"][0]["level"]
-            neigh["gold"] = vill["maps"][0]["gold"]
-            neigh["wood"] = vill["maps"][0]["wood"]
-            neigh["oil"] = vill["maps"][0]["oil"]
-            neigh["steel"] = vill["maps"][0]["steel"]
-            neighbors += [neigh]
+    # for key in __villages:
+    #     vill = __villages[key]
+    #     if vill["playerInfo"]["pid"] != '100000030': # general Mike
+    #         neigh = vill["playerInfo"]
+    #         neigh["xp"] = vill["maps"][0]["xp"]
+    #         neigh["level"] = vill["maps"][0]["level"]
+    #         neigh["gold"] = vill["maps"][0]["gold"]
+    #         neigh["wood"] = vill["maps"][0]["wood"]
+    #         neigh["oil"] = vill["maps"][0]["oil"]
+    #         neigh["steel"] = vill["maps"][0]["steel"]
+    #         neighbors += [neigh]
     # other players
     for key in __saves:
         vill = __saves[key]
