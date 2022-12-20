@@ -306,9 +306,9 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
             attr["xp"] += xp_gain
 
         if level:
-            attr["level"] = level
-
-        print("Added", xp_gain, "XP to", get_name_from_item_id(item[0]))
+            print(f"{get_name_from_item_id(item[0])} +{xp_gain}xp BOUGHT LEVEL UP -> {level}")
+        else:
+            print(f"{get_name_from_item_id(item[0])} +{xp_gain}XP")
 
     elif cmd == "set_variables":
         pass
