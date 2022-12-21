@@ -5,6 +5,8 @@ import urllib
 if os.name == 'nt':
     os.system("color")
 
+os.system("title Social Wars Server")
+
 print (" [+] Loading game config...")
 from get_game_config import get_game_config
 
@@ -19,11 +21,12 @@ from flask.debughelpers import attach_enctype_error_multidict
 from command import command
 from engine import timestamp_now
 from version import version_name
+from bundle import ASSETS_DIR, STUB_DIR, TEMPLATES_DIR, BASE_DIR
 
 host = '127.0.0.1'
 port = 5055
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder=TEMPLATES_DIR)
 
 print (" [+] Configuring server routes...")
 
@@ -76,40 +79,42 @@ def new():
 
 @app.route("/crossdomain.xml")
 def crossdomain():
-    return send_from_directory("stub", "crossdomain.xml")
+    return send_from_directory(STUB_DIR, "crossdomain.xml")
 
 @app.route("/img/<path:path>")
 def images(path):
-    return send_from_directory("templates/img", path)
+    return send_from_directory(TEMPLATES_DIR + "/img", path)
 
 ## GAME STATIC
 
 @app.route("/default01.static.socialpointgames.com/static/socialwars/<path:path>")
 def static_assets_loader(path):
 
+    return send_from_directory(ASSETS_DIR, path)
+
     ## CDN
-    if not os.path.exists(f"assets/{path}"):
+    if not os.path.exists(f"{ASSETS_DIR}/{path}"):
         # File does not exists in provided assets
-        if not os.path.exists(f"new_assets/assets/{path}"):
+        if not os.path.exists(f"{BASE_DIR}/new_assets/assets/{path}"):
             # Download file from SP's CDN if it doesn't exist
 
             # Make directory
-            directory = os.path.dirname(f"new_assets/assets/{path}")
+            directory = os.path.dirname(f"{BASE_DIR}/new_assets/assets/{path}")
             if not os.path.exists(directory):
                 os.makedirs(directory)
 
             # Download File
             URL = f"https://static.socialpointgames.com/static/socialwars/assets/{path}"
             try:
-                response = urllib.request.urlretrieve(URL, f"new_assets/assets/{path}")
+                response = urllib.request.urlretrieve(URL, f"{BASE_DIR}/new_assets/assets/{path}")
             except urllib.error.HTTPError:
                 return ("", 404)
 
-        return send_from_directory("new_assets/assets", path)
+        return send_from_directory("{BASE_DIR}/new_assets/assets", path)
     ## CDN END
 
 
-    return send_from_directory("assets", path)
+    return send_from_directory(ASSETS_DIR, path)
 
 ## GAME DYNAMIC
 

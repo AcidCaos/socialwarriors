@@ -1,8 +1,9 @@
 import json
 import os
 import jsonpatch
+from bundle import MODS_DIR, CONFIG_DIR, CONFIG_PATCH_DIR
 
-__game_config = json.load(open("./config/main.json", 'r', encoding='utf-8'))
+__game_config = json.load(open(os.path.join(CONFIG_DIR, "main.json"), 'r', encoding='utf-8'))
 
 def remove_duplicate_items():
     indexes = {}
@@ -34,17 +35,15 @@ def apply_config_patch(filename):
     jsonpatch.apply_patch(__game_config, patch, in_place=True)
 
 def patch_game_config():
-    patch_dir = "./config/patch"
-    mods_dir = "./mods"
 
-    for patch_file in os.listdir(patch_dir):
+    for patch_file in os.listdir(CONFIG_PATCH_DIR):
         if patch_file.endswith(".json"):
-            f = os.path.join(patch_dir, patch_file)
+            f = os.path.join(CONFIG_PATCH_DIR, patch_file)
             apply_config_patch(f)
             print(" * Patch applied:", f)
 
-    if os.path.exists("./mods.txt"):
-        with open("./mods.txt", "r") as f:
+    if os.path.exists(os.path.join(MODS_DIR, "/mods.txt")):
+        with open(os.path.join(MODS_DIR, "/mods.txt"), "r") as f:
             lines = f.readlines()
             f.close()
 
@@ -54,7 +53,7 @@ def patch_game_config():
                 continue
             if mod != "":
                 mod.replace(".json", "")
-                mod_path = f"{mods_dir}/{mod}.json"
+                mod_path = f"{MODS_DIR}/{mod}.json"
                 if os.path.exists(mod_path):
                     apply_config_patch(mod_path)
                     print(" * Mod applied:", mod)
