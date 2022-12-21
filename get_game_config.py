@@ -131,11 +131,25 @@ def get_attribute_from_goal_id(id: int, attribute_name: str) -> str:
 ###################
 
 def get_inventory_item_name(item: int):
-	itemstr = str(item)
-	items = __game_config["inventory_items"]
-	if itemstr in items:
-		return items[itemstr]["name"]
-	return None
+    itemstr = str(item)
+    items = __game_config["inventory_items"]
+    if itemstr in items:
+        return items[itemstr]["name"]
+    return None
+
+def get_collection_name(collection: int):
+    index = max(0, collection - 1)
+    collections = __game_config["collections"]
+    if index < len(collections):
+        return collections[index]["name"]
+    return None
+
+def get_collection_prize(collection: int):
+    index = max(0, collection - 1)
+    collections = __game_config["collections"]
+    if index < len(collections):
+        return json.loads(collections[index]["prize"])
+    return None
 
 ################################
 # WEEKLY REWARD (MONDAY BONUS) #

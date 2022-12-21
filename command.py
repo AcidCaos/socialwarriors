@@ -1,7 +1,7 @@
 import json
 
 from sessions import session, save_session
-from get_game_config import get_name_from_item_id, get_attribute_from_item_id, get_attribute_from_goal_id, get_xp_from_level, get_weekly_reward_length, get_inventory_item_name
+from get_game_config import get_name_from_item_id, get_attribute_from_item_id, get_attribute_from_goal_id, get_xp_from_level, get_weekly_reward_length, get_inventory_item_name, get_collection_name, get_collection_prize
 from constants import Constant
 from engine import timestamp_now, apply_resources, map_add_item, map_add_item_from_item, map_get_item, map_pop_item, map_delete_item, push_unit, pop_unit, add_store_item, remove_store_item, bought_unit_add, unit_collection_complete, set_goals, inventory_set, inventory_add, inventory_remove
 
@@ -476,6 +476,27 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         inventory_add(save["privateState"], item, quantity)
         name = get_inventory_item_name(item)
         print(f"Added {quantity} {name} to inventory")
+
+    elif cmd == "complete_collection":
+        collection_id = args[0]
+        bought = args[1]
+
+        privateState = save["privateState"]
+
+        prize = get_collection_prize(collection_id)
+
+        for key in prize:
+            add_store_item(map, int(key), prize[key])
+
+        collection_name = get_collection_name(collection_id)
+
+        if collection_id not in privateState["collections"]:
+            privateState["collections"].append(collection_id)
+
+        if bought:
+            print(f"Bought {collection_name}")
+        else:
+            print(f"Completed {collection_name}")
 
     elif cmd == "fast_forward":
         seconds = args[0]
