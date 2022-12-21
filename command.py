@@ -1,7 +1,7 @@
 import json
 
 from sessions import session, save_session
-from get_game_config import get_name_from_item_id, get_attribute_from_item_id, get_attribute_from_goal_id, get_xp_from_level, get_weekly_reward_length, get_inventory_item_name, get_collection_name, get_collection_prize
+from get_game_config import get_name_from_item_id, get_attribute_from_item_id, get_attribute_from_goal_id, get_xp_from_level, get_weekly_reward_length, get_inventory_item_name, get_collection_name, get_collection_prize, get_premium_days
 from constants import Constant
 from engine import timestamp_now, apply_resources, map_add_item, map_add_item_from_item, map_get_item, map_pop_item, map_delete_item, push_unit, pop_unit, add_store_item, remove_store_item, bought_unit_add, unit_collection_complete, set_goals, inventory_set, inventory_add, inventory_remove, add_click, activate_item_click, buy_si_help, finish_si
 
@@ -599,6 +599,19 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
             print(f"Shot Target {index} and won the game!")
         else:
             print(f"Shot Target {index}")
+
+    elif cmd == "buy_premium_account":
+        package_index = args[0]
+        days = get_premium_days(package_index)
+
+        privateState = save["privateState"]
+        ts_premium = privateState["timeStampEndPremium"]
+        if time_now >= ts_premium:
+            privateState["timeStampEndPremium"] = time_now + days * 86400
+            print(f"Bought Premium Account for {days} day(s)")
+        else:
+            privateState["timeStampEndPremium"] += days * 86400
+            print(f"Extended Premium Account for {days} day(s)")
 
     elif cmd == "fast_forward":
         seconds = args[0]

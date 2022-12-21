@@ -151,6 +151,20 @@ def get_collection_prize(collection: int):
         return json.loads(collections[index]["prize"])
     return None
 
+###################
+# PREMIUM ACCOUNT #
+###################
+
+def get_premium_days(package_index: int):
+    packages = __game_config["globals"]["PREMIUM_ACCOUNTS"]
+    index = package_index
+    if index >= len(packages):
+        index = len(packages) - 1
+    package = packages[index]
+    if "time" in package:
+        return package["time"]
+    return 0
+
 ################################
 # WEEKLY REWARD (MONDAY BONUS) #
 ################################
