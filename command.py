@@ -1,9 +1,9 @@
 import json
 
 from sessions import session, save_session
-from get_game_config import get_name_from_item_id, get_attribute_from_item_id, get_attribute_from_goal_id, get_xp_from_level, get_weekly_reward_length
+from get_game_config import get_name_from_item_id, get_attribute_from_item_id, get_attribute_from_goal_id, get_xp_from_level, get_weekly_reward_length, get_inventory_item_name
 from constants import Constant
-from engine import timestamp_now, apply_resources, map_add_item, map_add_item_from_item, map_get_item, map_pop_item, map_delete_item, push_unit, pop_unit, add_store_item, remove_store_item, bought_unit_add, unit_collection_complete, set_goals
+from engine import timestamp_now, apply_resources, map_add_item, map_add_item_from_item, map_get_item, map_pop_item, map_delete_item, push_unit, pop_unit, add_store_item, remove_store_item, bought_unit_add, unit_collection_complete, set_goals, inventory_set, inventory_add, inventory_remove
 
 def command(USERID, data):
     first_number = data["first_number"]
@@ -468,6 +468,14 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
 
         unit_collection_complete(save, collection_id)
         print("Completed unit collection", str(collection_id))
+
+    elif cmd == "add_inventory_item":
+        item = args[0]
+        quantity = args[1]
+
+        inventory_add(save["privateState"], item, quantity)
+        name = get_inventory_item_name(item)
+        print(f"Added {quantity} {name} to inventory")
 
     elif cmd == "fast_forward":
         seconds = args[0]

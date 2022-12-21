@@ -126,6 +126,17 @@ def get_attribute_from_goal_id(id: int, attribute_name: str) -> str:
     goal = get_goal_from_id(id)
     return goal[attribute_name] if goal and attribute_name in goal else None
 
+###################
+# INVENTORY ITEMS #
+###################
+
+def get_inventory_item_name(item: int):
+	itemstr = str(item)
+	items = __game_config["inventory_items"]
+	if itemstr in items:
+		return items[itemstr]["name"]
+	return None
+
 ################################
 # WEEKLY REWARD (MONDAY BONUS) #
 ################################

@@ -12,9 +12,9 @@ def migrate_loaded_save(save: dict):
         print(" [!] Applied version to save")
 
     privateState = save["privateState"]
-    if privateState["inventoryItems"] == None:
+    if type(privateState["inventoryItems"]) != dict:
         _changed = True
-        privateState["inventoryItems"] = []
+        privateState["inventoryItems"] = {}
         print(" [!] Applied inventory fix")
 
     return _changed

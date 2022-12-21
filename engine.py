@@ -75,6 +75,28 @@ def set_goals(privateState: dict, goal: int, progress: list):
         goals.append(None)
     goals[goal] = progress
 
+def inventory_set(privateState: dict, item: int, amount: int):
+    if quantity > 0:
+        privateState["inventoryItems"][str(item)] = quantity
+    else:
+        del privateState["inventoryItems"][itemstr]
+
+def inventory_add(privateState: dict, item: int, quantity: int):
+    itemstr = str(item)
+    if itemstr not in privateState["inventoryItems"]:
+        privateState["inventoryItems"][itemstr] = quantity
+    else:
+        privateState["inventoryItems"][itemstr] += quantity
+
+def inventory_remove(privateState: dict, item: int, amount: int):
+    itemstr = str(item)
+    if itemstr in privateState["inventoryItems"]:
+        new_quantity = privateState["inventoryItems"][itemstr] - quantity
+        if new_quantity <= 0:
+            del privateState["inventoryItems"][itemstr]
+        else:
+            privateState["inventoryItems"][itemstr] = new_quantity
+
 def reset_trades(save: dict):
     # Resets market trades if it's a new day
     now = timestamp_now()
