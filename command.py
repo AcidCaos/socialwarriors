@@ -3,7 +3,7 @@ import json
 from sessions import session, save_session
 from get_game_config import get_name_from_item_id, get_attribute_from_item_id, get_attribute_from_goal_id, get_xp_from_level, get_weekly_reward_length, get_inventory_item_name, get_collection_name, get_collection_prize, get_premium_days
 from constants import Constant
-from engine import timestamp_now, apply_resources, map_add_item, map_add_item_from_item, map_get_item, map_pop_item, map_delete_item, push_unit, pop_unit, add_store_item, remove_store_item, bought_unit_add, unit_collection_complete, set_goals, inventory_set, inventory_add, inventory_remove, add_click, activate_item_click, buy_si_help, finish_si
+from engine import timestamp_now, apply_resources, map_add_item, map_add_item_from_item, map_get_item, map_pop_item, map_delete_item, push_unit, pop_unit, add_store_item, remove_store_item, bought_unit_add, unit_collection_complete, set_goals, inventory_set, inventory_add, inventory_remove, add_click, activate_item_click, buy_si_help, finish_si, push_dead_unit, resurrect_hero
 
 def command(USERID, data):
     first_number = data["first_number"]
@@ -154,10 +154,16 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
             print("Error: item not found.")
             return
         
+        resurrectable = False
+        if reason == "KILL":
+            resurrectable = push_dead_unit(save["privateState"], item)
         name = str(get_name_from_item_id(item[0]))
         map_delete_item(map, item_index)
 
-        print(f"Remove {name}. Reason: {reason}")
+        if resurrectable:
+            print(f"Remove {name} (Resurrectable). Reason: {reason}")
+        else:
+            print(f"Remove {name}. Reason: {reason}")
     
     elif cmd == "kill":
         item_index = args[0]
@@ -612,6 +618,18 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         else:
             privateState["timeStampEndPremium"] += days * 86400
             print(f"Extended Premium Account for {days} day(s)")
+
+    elif cmd == "resurrect_hero":
+        index = args[0]
+        item_id = args[1]
+        x = args[2]
+        y = args[3]
+        used_syringe = args[4]
+
+        resurrect_hero(save["privateState"], item_id)
+        map_add_item(map, index, item_id, x, y)
+
+        print(f"Resurrected", str(get_name_from_item_id(item_id)))
 
     elif cmd == "fast_forward":
         seconds = args[0]

@@ -136,6 +136,40 @@ def finish_si(item: dict):
     if "si" in attr:
         del attr["si"]
 
+def push_dead_unit(privateState: dict, item: list):
+    # Tries to push item to deadHeroes if it is ressurectable and on player team
+    if item[7] != 1:
+        return False
+
+    properties = get_attribute_from_item_id(item[0], "properties")
+    if not properties:
+        return False
+
+    properties = json.loads(properties)
+    if "resurrectable" not in properties:
+        return False
+
+    if int(properties["resurrectable"]) > 0:
+        deadHeroes = privateState["deadHeroes"]
+        if str(item[0]) in deadHeroes:
+            deadHeroes[str(item[0])] += 1
+        else:
+            deadHeroes[str(item[0])] = 1
+        return True
+
+    return False
+
+def resurrect_hero(privateState: dict, item: int):
+    deadHeroes = privateState["deadHeroes"]
+    itemstr = str(item)
+    if itemstr not in deadHeroes:
+        return
+    num_heroes = deadHeroes[itemstr] - 1
+    if num_heroes <= 0:
+        del deadHeroes[itemstr]
+    else:
+        deadHeroes[itemstr] -= 1
+
 def reset_stuff(save: dict):
     # This function performs some resets in save whenever the game loads the map
     # Resets market trades if it's a new day

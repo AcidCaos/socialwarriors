@@ -16,5 +16,9 @@ def migrate_loaded_save(save: dict):
         _changed = True
         privateState["inventoryItems"] = {}
         print(" [!] Applied inventory fix")
+    if type(privateState["deadHeroes"]) != dict:
+        _changed = True
+        privateState["deadHeroes"] = {}
+        print(" [!] Applied hospital fix")
 
     return _changed
