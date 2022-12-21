@@ -151,6 +151,13 @@ def get_player_info_response():
     # Current Player
     if user is None:
         return (get_player_info(USERID), 200)
+    # General Mike
+    elif user in ["100000030","100000031"]:
+        return (get_neighbor_info("100000030", map), 200)
+    # Quest Maps
+    elif user.startswith("100000"):
+        return ({"result": "error"}, 200)
+    # Static Neighbours
     else:
         return (get_neighbor_info(user, map), 200)
     
