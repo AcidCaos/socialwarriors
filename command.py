@@ -335,9 +335,6 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         else:
             print(f"{get_name_from_item_id(item[0])} +{xp_gain}xp")
 
-    elif cmd == "set_variables":
-        pass
-
     elif cmd == "weekly_reward":
         if len(args) > 4:
             item_index = args[0]
@@ -635,6 +632,12 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         # TODO: FF map["questTimes"]
 
         print(f"Fast forwarded {seconds} seconds")
+
+    elif cmd == "ping":
+        print("Pong")
+
+    elif cmd == "set_variables":
+        print("Set player resources")
 
     else:
         print(f"Unhandled command '{cmd}' -> args", args)
