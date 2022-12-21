@@ -4472,7 +4472,7 @@
         "boughtUnits": [],
         "unitCollectionsCompleted": [],
         "mana": 0,
-        "inventoryItems": null,
+        "inventoryItems": [],
         "collections": [],
         "energy": 50,
         "researchItemNumber": [
