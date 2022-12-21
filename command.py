@@ -643,6 +643,33 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         map["resourceAlliesMarket"] = resource
         print("Set Allies Market resource")
 
+    elif cmd == "buy_mana_new":
+        print("Bought mana") # Nothing needs to be done here :)
+
+    elif cmd == "buy_magic":
+        magic_id = args[0]
+
+        privateState = save["privateState"]
+        magics = privateState["magics"]
+        if str(magic_id) in magics:
+            magics[str(magic_id)] += min(50, magics[str(magic_id)] + 1)
+        else:
+            magics[str(magic_id)] = 0
+
+        print("Bought magic spell")
+
+    elif cmd == "use_magic":
+        magic_id = args[0]
+
+        privateState = save["privateState"]
+        magics = privateState["magics"]
+        if str(magic_id) in magics:
+            magics[str(magic_id)] = min(50, magics[str(magic_id)] + 1)
+        else:
+            magics[str(magic_id)] = 0
+        
+        print("Used magic spell")
+
     elif cmd == "fast_forward":
         seconds = args[0]
 
@@ -657,6 +684,8 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         privateState["timestampLastAllianceBonus"] = max(0, privateState["timestampLastAllianceBonus"] - seconds)
         # privateState["timeStampDartsReset"] = max(0, privateState["timeStampDartsReset"] - seconds) # don't process weekly things
         privateState["timeStampDartsNewFree"] = max(0, privateState["timeStampDartsNewFree"] - seconds)
+        privateState["tsAttacksReset"] = max(0, privateState["tsAttacksReset"] - seconds)
+        privateState["tsSpyingsReset"] = max(0, privateState["tsSpyingsReset"] - seconds)
 
         # research timers
         research_timers = privateState["timeStampDoResearch"]

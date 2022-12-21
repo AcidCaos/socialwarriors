@@ -20,5 +20,9 @@ def migrate_loaded_save(save: dict):
         _changed = True
         privateState["deadHeroes"] = {}
         print(" [!] Applied hospital fix")
+    if type(privateState["magics"]) != dict:
+        _changed = True
+        privateState["magics"] = {}
+        print(" [!] Applied magics fix")
 
     return _changed
