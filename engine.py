@@ -75,7 +75,7 @@ def set_goals(privateState: dict, goal: int, progress: list):
         goals.append(None)
     goals[goal] = progress
 
-def inventory_set(privateState: dict, item: int, amount: int):
+def inventory_set(privateState: dict, item: int, quantity: int):
     if quantity > 0:
         privateState["inventoryItems"][str(item)] = quantity
     else:
