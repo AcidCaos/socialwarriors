@@ -87,6 +87,12 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         key = args[0]
         value = args[1]
 
+        if key == "idSimpleChapter":
+            # The reason why I put this here, is because there's a bug in the game where if this key is saved
+            # if a reload occurrs the game will for example think chapter 22 is 5 which is wrong
+            print(f"Ignored {key}")
+            return
+
         # questVars = {
         #     "id": 0,
         #     "spawned": False,
