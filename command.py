@@ -477,6 +477,14 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         name = get_inventory_item_name(item)
         print(f"Added {quantity} {name} to inventory")
 
+    elif cmd == "remove_inventory_item":
+        item = args[0]
+        quantity = args[1]
+
+        inventory_remove(save["privateState"], item, quantity)
+        name = get_inventory_item_name(item)
+        print(f"Removed {quantity} {name} from inventory")
+
     elif cmd == "complete_collection":
         collection_id = args[0]
         bought = args[1]

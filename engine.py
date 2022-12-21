@@ -88,7 +88,7 @@ def inventory_add(privateState: dict, item: int, quantity: int):
     else:
         privateState["inventoryItems"][itemstr] += quantity
 
-def inventory_remove(privateState: dict, item: int, amount: int):
+def inventory_remove(privateState: dict, item: int, quantity: int):
     itemstr = str(item)
     if itemstr in privateState["inventoryItems"]:
         new_quantity = privateState["inventoryItems"][itemstr] - quantity
