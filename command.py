@@ -88,8 +88,8 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         value = args[1]
 
         if key == "idSimpleChapter":
-            # The reason why I put this here, is because there's a bug in the game where if this key is saved
-            # if a reload occurrs the game will for example think chapter 22 is 5 which is wrong
+            # The game will reset chapter past on chapters 9 and above
+            # So we're gonna ignore this key to allow the player to play up to chapter 99, after that it will reset to chapter 1
             print(f"Ignored {key}")
             return
 
@@ -425,6 +425,12 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
 
     elif cmd == "collect_mission":
         next_mission = args[0]
+        if next_mission > 99:
+            # chapters 1 - 8 are scripted
+            # starting chapters 9+ works, the game has 90 entries so there's technically infinite chapters
+            # so I'm not sure what to do, so I'm going to allow a restart after chapter 99, the next chapter will be 1
+            next_mission = 1
+
         map["idCurrentMission"] = next_mission
         map["timestampLastChapter"] = time_now
         map["currentQuestVars"] = {}
