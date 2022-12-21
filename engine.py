@@ -10,6 +10,22 @@ def map_add_item(map: dict, index: int, item: int, x: int, y: int, orientation: 
         attr = {}
     if not store:
         store = []
+    if player == 1:
+        # if building is assigned to player, activate some properties
+        # properties
+        properties = get_attribute_from_item_id(item, "properties")
+        # enable SI (Socially In Construction), because the game expects it
+        if properties:
+            properties = json.loads(properties)
+            if "friend_assistable" in properties:
+                if int(properties["friend_assistable"]) > 0:
+                    attr["si"] = []
+        # click to build
+        click_to_build = get_attribute_from_item_id(item, "clicks_to_build")
+        if click_to_build:
+            if int(click_to_build) > 0:
+                attr["nc"] = 0
+
     map["items"][str(index)] = [item, x, y, timestamp, orientation, store, attr, player]
 
 def map_add_item_from_item(map: dict, index: int, item: list):
@@ -96,6 +112,29 @@ def inventory_remove(privateState: dict, item: int, quantity: int):
             del privateState["inventoryItems"][itemstr]
         else:
             privateState["inventoryItems"][itemstr] = new_quantity
+
+def add_click(item: dict):
+    attr = item[6]
+    if "nc" not in attr:
+        attr["nc"] = 1
+    else:
+        attr["nc"] += 1
+
+def activate_item_click(item: dict):
+    attr = item[6]
+    if "nc" in attr:
+        del attr["nc"]
+
+def buy_si_help(item: dict):
+    attr = item[6]
+    if "si" not in attr:
+        return
+    attr["si"].append(0) # 0 is for buying instead of hiring friends
+
+def finish_si(item: dict):
+    attr = item[6]
+    if "si" in attr:
+        del attr["si"]
 
 def reset_trades(save: dict):
     # Resets market trades if it's a new day

@@ -3,7 +3,7 @@ import json
 from sessions import session, save_session
 from get_game_config import get_name_from_item_id, get_attribute_from_item_id, get_attribute_from_goal_id, get_xp_from_level, get_weekly_reward_length, get_inventory_item_name, get_collection_name, get_collection_prize
 from constants import Constant
-from engine import timestamp_now, apply_resources, map_add_item, map_add_item_from_item, map_get_item, map_pop_item, map_delete_item, push_unit, pop_unit, add_store_item, remove_store_item, bought_unit_add, unit_collection_complete, set_goals, inventory_set, inventory_add, inventory_remove
+from engine import timestamp_now, apply_resources, map_add_item, map_add_item_from_item, map_get_item, map_pop_item, map_delete_item, push_unit, pop_unit, add_store_item, remove_store_item, bought_unit_add, unit_collection_complete, set_goals, inventory_set, inventory_add, inventory_remove, add_click, activate_item_click, buy_si_help, finish_si
 
 def command(USERID, data):
     first_number = data["first_number"]
@@ -517,6 +517,54 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
             print(f"Bought {collection_name}")
         else:
             print(f"Completed {collection_name}")
+
+    elif cmd == "add_click":
+        index = args[0]
+
+        item = map_get_item(map, index)
+        if not item:
+            print("Error: item not found.")
+            return
+
+        add_click(item)
+
+        print("Added click to", str(get_name_from_item_id(item[0])))
+
+    elif cmd == "activate_item_click":
+        index = args[0]
+
+        item = map_get_item(map, index)
+        if not item:
+            print("Error: item not found.")
+            return
+
+        activate_item_click(item)
+
+        print("Click to build finished for", str(get_name_from_item_id(item[0])))
+
+    elif cmd == "buy_si_help":
+        index = args[0]
+
+        item = map_get_item(map, index)
+        if not item:
+            print("Error: item not found.")
+            return
+
+        buy_si_help(item)
+
+        print("Bought SI help for", str(get_name_from_item_id(item[0])))
+
+    elif cmd == "finish_si":
+        index = args[0]
+
+        item = map_get_item(map, index)
+        if not item:
+            print("Error: item not found.")
+            return
+
+        finish_si(item)
+
+        print("Finished SI for", str(get_name_from_item_id(item[0])))
 
     elif cmd == "fast_forward":
         seconds = args[0]
