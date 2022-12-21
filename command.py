@@ -631,6 +631,18 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
 
         print(f"Resurrected", str(get_name_from_item_id(item_id)))
 
+    elif cmd == "set_resource_allies":
+        resource = args[0]
+        index = args[1]
+
+        item = map_get_item(map, index)
+        if item:
+            item[3] = time_now
+            finish_si(item)
+        
+        map["resourceAlliesMarket"] = resource
+        print("Set Allies Market resource")
+
     elif cmd == "fast_forward":
         seconds = args[0]
 

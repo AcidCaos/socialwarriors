@@ -128,6 +128,7 @@ def activate_item_click(item: dict):
 def buy_si_help(item: dict):
     attr = item[6]
     if "si" not in attr:
+        attr["si"] = [ 0 ]
         return
     attr["si"].append(0) # 0 is for buying instead of hiring friends
 
