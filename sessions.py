@@ -91,7 +91,8 @@ def new_village() -> str:
     village["version"] = version_code
     village["playerInfo"]["pid"] = USERID
     village["maps"][0]["timestamp"] = timestamp_now()
-    village["privateState"]["dartsRandomSeed"] = abs(int((2**16 - 1) * random.random()))
+    # Make sure that the game will initialize targets by calling darts_reset
+    village["privateState"]["timeStampDartsReset"] = 0
     # Memory saves
     __saves[USERID] = village
     # Generate save file

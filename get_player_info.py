@@ -1,12 +1,12 @@
 from sessions import session, neighbors, neighbor_session
-from engine import timestamp_now, reset_trades
+from engine import timestamp_now, reset_stuff
 
 def get_player_info(USERID):
     # Update last logged in
     ts_now = timestamp_now()
     session(USERID)["playerInfo"]["last_logged_in"] = ts_now
-    # Reset trades if possible
-    reset_trades(session(USERID))
+    # Reset things as some things are taken care of by the server side
+    reset_stuff(session(USERID))
     # player
     player_info = {
         "result": "ok",

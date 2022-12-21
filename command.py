@@ -566,6 +566,43 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
 
         print("Finished SI for", str(get_name_from_item_id(item[0])))
 
+    elif cmd == "darts_reset":
+        seed = args[0]
+
+        privateState = save["privateState"]
+        privateState["dartsRandomSeed"] = seed
+        privateState["dartsBalloonsShot"] = []
+        privateState["dartsHasFree"] = True
+        privateState["dartsGotExtra"] = False
+        privateState["timeStampDartsReset"] = time_now
+        privateState["timeStampDartsNewFree"] = time_now
+
+        print(f"Reset Targets (SEED: {seed})")
+
+    elif cmd == "darts_new_free":
+        privateState = save["privateState"]
+        privateState["dartsHasFree"] = True
+        privateState["timeStampDartsNewFree"] = time_now
+
+        print(f"Given free Targets shot")
+
+    elif cmd == "darts_shoot_balloon":
+        index = args[0]
+        won_prize = args[1]
+
+        privateState = save["privateState"]
+        targets = privateState["dartsBalloonsShot"]
+        if index not in targets:
+            targets.append(index)
+        
+        privateState["dartsHasFree"] = False
+        privateState["timeStampDartsNewFree"] = time_now
+
+        if won_prize:
+            print(f"Shot Target {index} and won the game!")
+        else:
+            print(f"Shot Target {index}")
+
     elif cmd == "fast_forward":
         seconds = args[0]
 
@@ -576,9 +613,9 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         map["timestampLastTreasure"] = max(0, map["timestampLastTreasure"] - seconds)
         map["timestampLastTrade"] = max(0, map["timestampLastTrade"] - seconds)
         privateState["timestampLastBonus"] = max(0, privateState["timestampLastBonus"] - seconds)
-        privateState["timeStampMondayBonus"] = max(0, privateState["timeStampMondayBonus"] - seconds)
+        # privateState["timeStampMondayBonus"] = max(0, privateState["timeStampMondayBonus"] - seconds) # don't process weekly things
         privateState["timestampLastAllianceBonus"] = max(0, privateState["timestampLastAllianceBonus"] - seconds)
-        privateState["timeStampDartsReset"] = max(0, privateState["timeStampDartsReset"] - seconds)
+        # privateState["timeStampDartsReset"] = max(0, privateState["timeStampDartsReset"] - seconds) # don't process weekly things
         privateState["timeStampDartsNewFree"] = max(0, privateState["timeStampDartsNewFree"] - seconds)
 
         # research timers
