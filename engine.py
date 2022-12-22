@@ -171,6 +171,27 @@ def resurrect_hero(privateState: dict, item: int):
     else:
         deadHeroes[itemstr] -= 1
 
+def push_queue_unit(item: dict):
+    attr = item[6]
+    if "nu" in attr:
+        attr["nu"] += 1
+    else:
+        attr["nu"] = 1
+    attr["ts"] = timestamp_now()
+
+def pop_queue_unit(item: dict):
+    attr = item[6]
+    if "nu" not in attr:
+        return
+    nu = attr["nu"] - 1
+    if nu > 0:
+        attr["nu"] = nu
+        attr["ts"] = timestamp_now()
+    else:
+        del attr["nu"]
+        if "ts" in attr:
+            del attr["ts"]
+
 def reset_stuff(save: dict):
     # This function performs some resets in save whenever the game loads the map
     # Resets market trades if it's a new day
