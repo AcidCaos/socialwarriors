@@ -690,6 +690,16 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
 
         pop_queue_unit(item)
 
+    elif cmd == "buy_offer_pack":
+        package_id = args[0]
+        item_list = args[1]
+
+        items = json.loads(item_list)
+        for item in items:
+            add_store_item(map, item)
+
+        print("Bought Offer Pack")
+
     elif cmd == "fast_forward":
         seconds = args[0]
 
