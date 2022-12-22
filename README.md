@@ -10,7 +10,7 @@ Social Wars preservation project.
 
 | Version | Release date | Download |
 | --- | --- | --- |
-| pre-alpha 0.01a | Comming Soon      | :ticket: [Launcher](../../releases/download/0.01a/social-warriors_0.01a.zip) |
+| alpha 0.01a | December 23, 2022 | :ticket: [Launcher](../../releases/download/0.01a/social-warriors_0.01a.exe) |
 
 ## How to Install on Windows
 
