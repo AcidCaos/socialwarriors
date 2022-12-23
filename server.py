@@ -89,31 +89,6 @@ def images(path):
 
 @app.route("/default01.static.socialpointgames.com/static/socialwars/<path:path>")
 def static_assets_loader(path):
-
-    return send_from_directory(ASSETS_DIR, path)
-
-    ## CDN
-    if not os.path.exists(f"{ASSETS_DIR}/{path}"):
-        # File does not exists in provided assets
-        if not os.path.exists(f"{BASE_DIR}/new_assets/assets/{path}"):
-            # Download file from SP's CDN if it doesn't exist
-
-            # Make directory
-            directory = os.path.dirname(f"{BASE_DIR}/new_assets/assets/{path}")
-            if not os.path.exists(directory):
-                os.makedirs(directory)
-
-            # Download File
-            URL = f"https://static.socialpointgames.com/static/socialwars/assets/{path}"
-            try:
-                response = urllib.request.urlretrieve(URL, f"{BASE_DIR}/new_assets/assets/{path}")
-            except urllib.error.HTTPError:
-                return ("", 404)
-
-        return send_from_directory("{BASE_DIR}/new_assets/assets", path)
-    ## CDN END
-
-
     return send_from_directory(ASSETS_DIR, path)
 
 ## GAME DYNAMIC
