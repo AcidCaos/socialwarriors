@@ -25,8 +25,9 @@ pyinstaller --onefile ^
  --distpath .\dist ^
  --specpath .\bundle ^
  --noconfirm ^
+ --icon=..\icon.ico ^
+ --noupx ^
  --name %NAME% ..\server.py
-REM --icon=..\icon.ico
 REM --debug bootloader
 echo [+] pyInstaller Done.
 EXIT /B 0
