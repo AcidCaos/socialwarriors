@@ -10,7 +10,10 @@ Social Wars preservation project.
 
 | Version | Release date | Download |
 | --- | --- | --- |
-| alpha 0.01a | December 23, 2022 | :ticket: [Launcher](../../releases/download/0.01a/social-warriors_0.01a.exe) |
+| alpha 0.01a | December 23, 2022 | :ticket: [Launcher](../../releases/download/0.01a/social-warriors_0.01a.exe) ([32-bit](../../releases/download/0.01a/social-warriors_0.01a_32bit.exe)) <br> :package: [Bundle](../../releases/download/0.01a/social-warriors_0.01a.zip) ([32-bit](../../releases/download/0.01a/social-warriors_0.01a_32bit.zip))|
+
+:information_source: The *Launcher* is a single EXE file that extracts the game each time it gets executed.
+<br>The *Bundle* is a ZIP archive that needs to be unzipped, and has no loading delay when executed.
 
 ## How to Install on Windows
 
