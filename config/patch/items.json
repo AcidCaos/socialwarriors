@@ -5,7 +5,7 @@
 		"value": 
 		{
 			"id": "302",
-			"in_store": "1",
+			"in_store": "0",
 			"name": "Atom Fusion",
 			"type": "b",
 			"cost": "0",
@@ -51,7 +51,7 @@
 			"syringes": "0",
 			"volume": "0",
 			"max_elem_vol": "3",
-			"building_limit_same_id": "-1",
+			"building_limit_same_id": "1",
 			"building_limit_same_scf": "-1",
 			"group_type": "BUNKER",
 			"training_time": "0",
