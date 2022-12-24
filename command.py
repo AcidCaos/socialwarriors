@@ -591,7 +591,7 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
 
     elif cmd == "darts_shoot_balloon":
         index = args[0]
-        won_prize = args[1]
+        won_extra = args[1]
 
         privateState = save["privateState"]
         targets = privateState["dartsBalloonsShot"]
@@ -600,6 +600,8 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         
         privateState["dartsHasFree"] = False
         privateState["timeStampDartsNewFree"] = time_now
+        if won_extra:
+            privateState["dartsGotExtra"] = True
 
         if won_prize:
             print(f"Shot Target {index} and won the game!")
