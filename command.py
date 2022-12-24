@@ -3,7 +3,7 @@ import json
 from sessions import session, save_session
 from get_game_config import get_name_from_item_id, get_attribute_from_item_id, get_attribute_from_goal_id, get_xp_from_level, get_weekly_reward_length, get_inventory_item_name, get_collection_name, get_collection_prize, get_premium_days
 from constants import Constant
-from engine import timestamp_now, apply_resources, map_add_item, map_add_item_from_item, map_get_item, map_pop_item, map_delete_item, push_unit, pop_unit, add_store_item, remove_store_item, bought_unit_add, unit_collection_complete, set_goals, inventory_set, inventory_add, inventory_remove, add_click, activate_item_click, buy_si_help, finish_si, push_dead_unit, resurrect_hero, push_queue_unit, pop_queue_unit
+from engine import timestamp_now, apply_resources, map_add_item, map_add_item_from_item, map_get_item, map_pop_item, map_delete_item, push_unit, pop_unit, add_store_item, remove_store_item, bought_unit_add, unit_collection_complete, set_goals, inventory_set, inventory_add, inventory_remove, add_click, activate_item_click, buy_si_help, finish_si, push_dead_unit, resurrect_hero, push_queue_unit, pop_queue_unit, map_lose_item
 
 def command(USERID, data):
     first_number = data["first_number"]
@@ -745,12 +745,25 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         if "quest_id" in response:
             quest_id = response["quest_id"]
 
-        # TODO: Handle unit losses
+        # Lost units
+        privateState = save["privateState"]
+        for unit in units:
+            # item_id (not on map), sent_to_battle, A, B 
+            lost = max(0, unit[2] - unit[3]) # number of loses is A - B
+            if lost > 0:
+                item = unit[0]
+                print(f"Lost {lost} {get_name_from_item_id(unit[0])}(s)")
+                map_lose_item(map, privateState, unit[0], lost)
+
         if not quest_id:
             print("Error: No quest played.")
             return
         
         map["questTimes"][str(quest_id)] = time_now
+        if win:
+            print(f"Won quest {quest_id}")
+        else:
+            print(f"Failed quest {quest_id}")
 
     elif cmd == "fast_forward":
         seconds = args[0]

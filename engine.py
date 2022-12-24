@@ -192,6 +192,21 @@ def pop_queue_unit(item: dict):
         if "ts" in attr:
             del attr["ts"]
 
+def map_lose_item(map: dict, privateState: dict, item: int, quantity: int):
+    qty = quantity
+    map_items = map["items"]
+    while qty > 0:
+        deleted = False
+        for index in map_items:
+            if map_items[index][0] == item and map_items[index][7]:
+                _item = map_pop_item(map, index)
+                push_dead_unit(privateState, _item)
+                deleted = True
+                break
+        if not deleted:
+            return
+        qty -= 1
+
 def reset_stuff(save: dict):
     # This function performs some resets in save whenever the game loads the map
     # Resets market trades if it's a new day
