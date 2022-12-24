@@ -12,14 +12,22 @@ def migrate_loaded_save(save: dict):
         print(" [!] Applied version to save")
 
     privateState = save["privateState"]
+    maps = save["maps"]
+
+    if "inventoryItems" not in privateState:
+        privateState["inventoryItems"] = None
     if type(privateState["inventoryItems"]) != dict:
         _changed = True
         privateState["inventoryItems"] = {}
         print(" [!] Applied inventory fix")
+    if "deadHeroes" not in privateState:
+        privateState["deadHeroes"] = None
     if type(privateState["deadHeroes"]) != dict:
         _changed = True
         privateState["deadHeroes"] = {}
         print(" [!] Applied hospital fix")
+    if "magics" not in privateState:
+        privateState["magics"] = None
     if type(privateState["magics"]) != dict:
         _changed = True
         privateState["magics"] = {}
