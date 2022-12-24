@@ -702,6 +702,56 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
 
         print("Bought Offer Pack")
 
+    elif cmd == "admin_set_quest_rank":
+        quest_index = args[0]
+        difficulty = args[1]
+
+        privateState = save["privateState"]
+        privateState["questsRank"][str(quest_index)] = difficulty 
+
+    elif cmd == "end_quest":
+        response = None
+
+        try:
+            response = json.loads(args[0])
+        except:
+            print("Error: Failed to parse command.")
+            return
+
+        if not response:
+            print("Error: Failed to parse command.")
+            return
+
+        win = False
+        duration = 0
+        units = None
+        _map = 0
+        difficulty = None
+        voluntary_end = True
+        quest_id = None
+
+        if "win" in response:
+            win = response["win"]
+        if "duration" in response:
+            duration = response["duration"]
+        if "units" in response:
+            units = response["units"]
+        if "map" in response:
+            _map = response["map"]
+        if "difficulty" in response:
+            difficulty = max(1, min(3, response["difficulty"]))
+        if "voluntary_end" in response:
+            voluntary_end = response["voluntary_end"]
+        if "quest_id" in response:
+            quest_id = response["quest_id"]
+
+        # TODO: Handle unit losses
+        if not quest_id:
+            print("Error: No quest played.")
+            return
+        
+        map["questTimes"][str(quest_id)] = time_now
+
     elif cmd == "fast_forward":
         seconds = args[0]
 
@@ -733,7 +783,10 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
             data = items[index]
             data[3] = max(0, data[3] - seconds)
 
-        # TODO: FF map["questTimes"]
+        # quest times
+        questTimes = map["questTimes"]
+        for key in questTimes:
+            questTimes[key] = max(0, questTimes[key] - seconds)
 
         print(f"Fast forwarded {seconds} seconds")
 

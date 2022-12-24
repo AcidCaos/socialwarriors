@@ -32,5 +32,12 @@ def migrate_loaded_save(save: dict):
         _changed = True
         privateState["magics"] = {}
         print(" [!] Applied magics fix")
+    for map in maps:
+        if "questTimes" not in map:
+            map["questTimes"] = None
+        if type(map["questTimes"]) != dict:
+            _changed = True
+            map["questTimes"] = {}
+            print(" [!] Applied quest fix")
 
     return _changed
