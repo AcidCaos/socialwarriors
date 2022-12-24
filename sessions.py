@@ -10,10 +10,10 @@ from version import version_code
 from engine import timestamp_now
 from version import migrate_loaded_save
 
-
-from bundle import VILLAGES_DIR, SAVES_DIR
+from bundle import VILLAGES_DIR, QUESTS_DIR, SAVES_DIR
 
 __villages = {}  # ALL static neighbors
+__quests = {}  # ALL static quests
 '''__villages = {
     "USERID_1": {
         "playerInfo": {...},
@@ -22,7 +22,6 @@ __villages = {}  # ALL static neighbors
     },
     "USERID_2": {...}
 }'''
-
 __saves = {}  # ALL saved villages
 '''__saves = {
     "USERID_1": {
@@ -39,9 +38,12 @@ __initial_village = json.load(open(os.path.join(VILLAGES_DIR, "initial.json")))
 
 def load_saved_villages():
     global __villages
+    global __quests
     global __saves
+
     # Empty in memory
     __villages = {}
+    __quests = {}
     __saves = {}
     # Saves dir check
     if not os.path.exists(SAVES_DIR):
@@ -58,11 +60,20 @@ def load_saved_villages():
     for file in os.listdir(VILLAGES_DIR):
         if file == "initial.json" or not file.endswith(".json"):
             continue
-        print(f" * Loading STATIC neighbor: village at {file}... ", end='')
+        print(f" * Loading STATIC NEIGHBOUR: village at {file}... ", end='')
         village = json.load(open(os.path.join(VILLAGES_DIR, file)))
         USERID = village["playerInfo"]["pid"]
-        print("USERID:", USERID)
+        print("STATIC USERID:", USERID)
         __villages[str(USERID)] = village
+    # Static quests in /villages/quest
+    for file in os.listdir(QUESTS_DIR):
+        if file == "initial.json" or not file.endswith(".json"):
+            continue
+        print(f" * Loading STATIC QUEST: village at {file}... ", end='')
+        village = json.load(open(os.path.join(QUESTS_DIR, file)))
+        USERID = village["playerInfo"]["pid"]
+        print("QUEST USERID:", USERID)
+        __quests[str(USERID)] = village
     # Saves in /saves
     for file in os.listdir(SAVES_DIR):
         print(f" * Loading SAVE: village at {file}... ", end='')
@@ -72,7 +83,7 @@ def load_saved_villages():
             print("Corrupted JSON.")
             continue
         USERID = save["playerInfo"]["pid"]
-        print("USERID:", USERID)
+        print("PLAYER USERID:", USERID)
         __saves[str(USERID)] = save
         modified = migrate_loaded_save(save) # check save version for migration
         if modified:
@@ -131,6 +142,8 @@ def neighbor_session(USERID: str) -> dict:
     assert(isinstance(USERID, str))
     if USERID in __saves:
         return __saves[USERID]
+    if USERID in __quests:
+        return __quests[USERID]
     if USERID in __villages:
         return __villages[USERID]
 
