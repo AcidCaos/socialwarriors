@@ -46,7 +46,46 @@
                     </embed>
                 </object>
                 <br>
-                <a id="expand" href="#" onclick="document.getElementById('swf').width='100%'; document.getElementById('expand').hidden=true" style="text-decoration: none; color: #777;">&lt;  expand  &gt;</a>
+                <a id="expand" href="#" style="text-decoration: none; color: #777;"></a>
+                <script>
+                    
+                    if (getCookie("expand") == "1") expand();
+                    else contract();
+
+                    function expand() {
+                        setCookie("expand", "1", 60)
+                        document.getElementById('swf').width='100%';
+                        document.getElementById('expand').onclick=contract;
+                        document.getElementById('expand').innerText=">> contract <<";
+                    }
+
+                    function contract() {
+                        setCookie("expand", "0", 60)
+                        document.getElementById('swf').width='750';
+                        document.getElementById('expand').onclick=expand;
+                        document.getElementById('expand').innerText="<< expand >>";
+                    }
+
+                    function setCookie(c_name, value, exdays) {
+                        var exdate = new Date();
+                        exdate.setDate(exdate.getDate() + exdays);
+                        var c_value = escape(value) + ((exdays == null) ? "" : "; expires=" + exdate.toUTCString());
+                        document.cookie = c_name + "=" + c_value;
+                    }
+
+                    function getCookie(c_name) {
+                        var i, x, y, ARRcookies = document.cookie.split(";");
+                        for (i = 0; i < ARRcookies.length; i++) {
+                            x = ARRcookies[i].substr(0, ARRcookies[i].indexOf("="));
+                            y = ARRcookies[i].substr(ARRcookies[i].indexOf("=") + 1);
+                            x = x.replace(/^\s+|\s+$/g, "");
+                            if (x == c_name) {
+                                return unescape(y);
+                            }
+                        }
+                        return null;
+                    }
+                </script>
             </div>
         </center>
     </body>
