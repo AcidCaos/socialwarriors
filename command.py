@@ -107,7 +107,7 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
 
         # TODO: Check that those values are actually the same
         if key == "id":
-            map["idCurrentMission"] = int(value)
+            map["idCurrentMission"] = value
         # TODO: What should be there in the first place?
         if not map["currentQuestVars"]:
             map["currentQuestVars"] = {}
@@ -434,7 +434,7 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
             # so I'm not sure what to do, so I'm going to allow a restart after chapter 99, the next chapter will be 1
             next_mission = 1
 
-        map["idCurrentMission"] = next_mission
+        map["idCurrentMission"] = str(next_mission)
         map["timestampLastChapter"] = time_now
         map["currentQuestVars"] = {}
 
