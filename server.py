@@ -131,7 +131,7 @@ def get_player_info_response():
         return (get_neighbor_info("100000030", map), 200)
     # Quest Maps
     elif user.startswith("100000"):
-        return ({"result": "error"}, 200)
+        return (get_neighbor_info(user, map), 200)
     # Static Neighbours
     else:
         return (get_neighbor_info(user, map), 200)

@@ -17,16 +17,19 @@ def get_player_info(USERID):
         "privateState": session(USERID)["privateState"],
         "neighbors": neighbors(USERID)
     }
-	
+    
     return player_info
 
 def get_neighbor_info(userid, map_number):
+    _map_number = map_number
+    if not map_number:
+        _map_number = 0
     neighbor_info = {
         "result": "ok",
         "processed_errors": 0,
         "timestamp": timestamp_now(),
         "playerInfo": neighbor_session(userid)["playerInfo"],
-        "map": neighbor_session(userid)["maps"][map_number],
+        "map": neighbor_session(userid)["maps"][_map_number],
         "privateState": neighbor_session(userid)["privateState"]
     }
     return neighbor_info
