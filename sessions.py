@@ -103,6 +103,8 @@ def new_village() -> str:
     village["maps"][0]["timestamp"] = timestamp_now()
     # Make sure that the game will initialize targets by calling darts_reset
     village["privateState"]["timeStampDartsReset"] = 0
+    # Migrate it if needed
+    migrate_loaded_save(village)
     # Memory saves
     __saves[USERID] = village
     # Generate save file
