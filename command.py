@@ -603,7 +603,7 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         if won_extra:
             privateState["dartsGotExtra"] = True
 
-        if won_prize:
+        if won_extra:
             print(f"Shot Target {index} and won the game!")
         else:
             print(f"Shot Target {index}")
