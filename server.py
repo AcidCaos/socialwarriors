@@ -85,6 +85,10 @@ def crossdomain():
 def images(path):
     return send_from_directory(TEMPLATES_DIR + "/img", path)
 
+@app.route("/css/<path:path>")
+def css(path):
+    return send_from_directory(TEMPLATES_DIR + "/css", path)
+
 ## GAME STATIC
 
 @app.route("/default01.static.socialpointgames.com/static/socialwars/<path:path>")

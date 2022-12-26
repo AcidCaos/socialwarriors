@@ -1,92 +1,160 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <!-- Meta -->
+        <meta charset="utf-8"/>
+        <!-- Title and Icon -->
         <title>Social Wars</title>
         <link rel="shortcut icon" href="img/icon.png"/>
 	    <link rel="icon" type="image/gif" href="img/icon.png"/>
     </head>
-    <body>
+    <body style="font-family: 'lucida grande',tahoma,verdana,arial,sans-serif">
         <center>
-            <img src="img/logo.png" style="width: 200px;"/>
-            <p style="margin: 2px 0px 15px 0px;">The Social Warriors team. ~ version {{version}}</p>
-            <div style="width: 760px; overflow: hidden; background-color: #e5e5e5; border-radius: 5px;"> <!-- header bar -->
-                <div style="float: right; padding: 7px;"> <!-- logout menu -->
-                    <p style="display:inline">Logged in as <b>{{save_info.name}}</b> lvl {{save_info.level}}</p>
-                    (<a href="/">logout</a>)
-                </div>
-                <div style="float: left; padding: 7px;"> <!-- logo -->
-                    [<a target="_blank" href="https://discord.gg/zW5gSbQJBw">Discord</a>]
-                    [<a target="_blank" href="https://github.com/AcidCaos/socialwarriors#readme">GitHub</a>]
-                    [<a target="_blank" href="https://socialwars.fandom.com/wiki/Social_Wars_Wiki">Wiki</a>]
+            <!-- SESSION HEADER -->
+            <div id="header" style="width: 760px; margin-top: 50px;">
+                <div id="session" style="float: right;">
+                    <p style="display:inline">Logged in as <b>{{save_info.name}}</b> lvl {{save_info.level}} (<a href="/">logout</a>)</p>
                 </div>
             </div>
             <br>
-            <div WIDTH="750">
-                <object>
-                    <embed id="swf"
-                        src="http://{{SERVERIP}}:{{SERVERPORT}}/default01.static.socialpointgames.com/static/socialwars/flash/SWLoader.swf?swftoload=http://{{SERVERIP}}:{{SERVERPORT}}/default01.static.socialpointgames.com/static/socialwars/flash/{{GAMEVERSION}}" 
-                        allowFullScreen="true" bgcolor="#669C2C" quality=high WIDTH="750" HEIGHT="600" NAME="se" ALIGN=""
-                        TYPE="application/x-shockwave-flash" PLUGINSPAGE="http://www.macromedia.com/go/getflashplayer"
-                        flashvars='spdebug=notnull&brk=0
-                        &staticUrl=http://{{SERVERIP}}:{{SERVERPORT}}/default01.static.socialpointgames.com/static/socialwars/&brk=0
-                        &dynamicUrl=http://{{SERVERIP}}:{{SERVERPORT}}/dynamic.flash1.dev.socialpoint.es/appsfb/menvswomen/srvsexwars/&brk=0
-                        &skiphash12341=notnull&brk=0
-                        &fb_sig_user={{save_info.userid}}&brk=0
-                        &user_key=123456789&brk=0
-                        &language=en&brk=0
-                        &accessToken=AAABbZAm0wdMUBALsOrR0Ho68CLjaOT8SV3vftKg9mbo1zZColaW5FljRVaLxPGxXXnm1M98mTZCAttcQ4GHwvSyXfsyxYmvKMH8Hmn5iliSPnjvIsZA6&brk=0
-                        &sex=m&brk=0
-                        &lastLoggedIn=1349266517&brk=0
-                        &dailyBonus=0&brk=0
-                        &friendsInfo[{"first_name":"AcidCaos","uid":"100000","pic_square":"http://{{SERVERIP}}:{{SERVERPORT}}/img/profile/x.jpg"}}]&brk=0
-                        &serverTime={{serverTime}}&brk=0
-                        &forceSyncError=1&brk=0
-                        &forceAttackReload=0&brk=0
-                        &forceQuestReload=0&brk=0'>
-                    </embed>
-                </object>
-                <br>
-                <a id="expand" href="#" style="text-decoration: none; color: #777;"></a>
-                <script>
-                    
-                    if (getCookie("expand") == "1") expand();
-                    else contract();
-
-                    function expand() {
-                        setCookie("expand", "1", 60)
-                        document.getElementById('swf').width='100%';
-                        document.getElementById('expand').onclick=contract;
-                        document.getElementById('expand').innerText=">> contract <<";
+            <!-- GAME BAR -->
+            <div id="gameBar">
+                <!-- GAME BAR TOP -->
+                <!--<div id="gamebar_top" style="width: 760px; height: 90px;">
+                    <div style="float: left; margin-left:155px; padding: 4px; font-size: 10pt">
+                        <!-- VERSION -->
+                        <!-- <br><br><br>
+                        <p style="display: inline">{{ version }}</p>
+                    </div>
+                </div>-->
+                <!-- GAME BAR BUTTONS -->
+                <div id="gamebar_buttons">
+                    <!-- &nbsp; -->
+                    <a class="gameBarButton" href="#"><div><img src="img/gift.png">Free Gifts</div></a>
+                    <a class="gameBarButton gameBarButtonSelected" href="#"><div><img>Play</div></a>
+                    <a class="gameBarButton" href="#"><div><img src="img/cash.png">Get Cash</div></a>
+                    <a class="gameBarButton" href="https://discord.gg/zW5gSbQJBw" target="_blank"><div><img src="img/discord.png">Discord</div></a>
+                    <a class="gameBarButton" href="https://github.com/AcidCaos/socialwarriors#readme" target="_blank"><div><img src="img/github.png">GitHub</div></a>
+                </div>
+                <style>
+                    #gameBar {
+                        text-align: left;
+                        width: 760px;
+                        margin-top: 15px;
+                        margin-bottom: 0px;
+                        padding: 0px;
+                        background-image: url('img/Gamebar_byTrevo.png');
+                        background-repeat: no-repeat;
+                        background-size: contain;
+                    }
+                    #gamebar_buttons {
+                        background-color:rgb(97, 104, 7);
+                        border: solid rgb(65, 70, 3) 3px;
+                        border-bottom: solid rgb(65, 70, 3) 4px;
+                        border-top-left-radius: 6px;
+                        border-top-right-radius: 6px;
+                    }
+                    .gameBarButton {
+                        display: inline-block;
+                        height: 19px;
+                        color: black;
+                        border: solid 1.5px;
+                        border-color: rgb(80, 79, 29);
+                        background-color:rgb(249, 250, 202);
+                        border-top-left-radius: 5px;
+                        border-top-right-radius: 5px;
+                        cursor: pointer;
+                        text-decoration: none;
+                        font-size: 11pt;
+                        padding: 2px 3px 1px 3px; 
                     }
 
-                    function contract() {
-                        setCookie("expand", "0", 60)
-                        document.getElementById('swf').width='750';
-                        document.getElementById('expand').onclick=expand;
-                        document.getElementById('expand').innerText="<< expand >>";
+                    .gameBarButtonSelected {
+                        background-color:rgb(233, 221, 81);
                     }
 
-                    function setCookie(c_name, value, exdays) {
-                        var exdate = new Date();
-                        exdate.setDate(exdate.getDate() + exdays);
-                        var c_value = escape(value) + ((exdays == null) ? "" : "; expires=" + exdate.toUTCString());
-                        document.cookie = c_name + "=" + c_value;
+                    .gameBarButton img {
+                        height: 17px;
+                        padding-right: 3px;
+                        vertical-align: middle;
                     }
 
-                    function getCookie(c_name) {
-                        var i, x, y, ARRcookies = document.cookie.split(";");
-                        for (i = 0; i < ARRcookies.length; i++) {
-                            x = ARRcookies[i].substr(0, ARRcookies[i].indexOf("="));
-                            y = ARRcookies[i].substr(ARRcookies[i].indexOf("=") + 1);
-                            x = x.replace(/^\s+|\s+$/g, "");
-                            if (x == c_name) {
-                                return unescape(y);
-                            }
-                        }
-                        return null;
+                    .gameBarButton:hover {
+                        background-color:rgb(250, 237, 90);
+                        text-decoration: none;
                     }
-                </script>
+
+                    .gameBarButtonSelected:hover {
+                        background-color:rgb(223, 212, 82);
+                    }
+
+                </style>
             </div>
+            <!-- EMBED GAME -->
+            <object>
+                <embed id="swf"
+                    src="http://{{SERVERIP}}:{{SERVERPORT}}/default01.static.socialpointgames.com/static/socialwars/flash/SWLoader.swf?swftoload=http://{{SERVERIP}}:{{SERVERPORT}}/default01.static.socialpointgames.com/static/socialwars/flash/{{GAMEVERSION}}" 
+                    allowFullScreen="true" bgcolor="#669C2C" quality=high WIDTH="760" HEIGHT="600" NAME="se" ALIGN=""
+                    TYPE="application/x-shockwave-flash" PLUGINSPAGE="http://www.macromedia.com/go/getflashplayer"
+                    flashvars='spdebug=notnull&brk=0
+                    &staticUrl=http://{{SERVERIP}}:{{SERVERPORT}}/default01.static.socialpointgames.com/static/socialwars/&brk=0
+                    &dynamicUrl=http://{{SERVERIP}}:{{SERVERPORT}}/dynamic.flash1.dev.socialpoint.es/appsfb/menvswomen/srvsexwars/&brk=0
+                    &skiphash12341=notnull&brk=0
+                    &fb_sig_user={{save_info.userid}}&brk=0
+                    &user_key=123456789&brk=0
+                    &language=en&brk=0
+                    &accessToken=AAABbZAm0wdMUBALsOrR0Ho68CLjaOT8SV3vftKg9mbo1zZColaW5FljRVaLxPGxXXnm1M98mTZCAttcQ4GHwvSyXfsyxYmvKMH8Hmn5iliSPnjvIsZA6&brk=0
+                    &sex=m&brk=0
+                    &lastLoggedIn=1349266517&brk=0
+                    &dailyBonus=0&brk=0
+                    &friendsInfo[{"first_name":"AcidCaos","uid":"100000","pic_square":"http://{{SERVERIP}}:{{SERVERPORT}}/img/profile/x.jpg"}}]&brk=0
+                    &serverTime={{serverTime}}&brk=0
+                    &forceSyncError=1&brk=0
+                    &forceAttackReload=0&brk=0
+                    &forceQuestReload=0&brk=0'>
+                </embed>
+            </object>
+            <br>
+            <a id="expand" href="#" style="text-decoration: none; color: #777;"></a>
+            <script>
+                
+                if (getCookie("expand") == "1") expand();
+                else contract();
+
+                function expand() {
+                    setCookie("expand", "1", 60)
+                    document.getElementById('swf').width='100%';
+                    document.getElementById('expand').onclick=contract;
+                    document.getElementById('expand').innerText=">> contract <<";
+                }
+
+                function contract() {
+                    setCookie("expand", "0", 60)
+                    document.getElementById('swf').width='1090';
+                    document.getElementById('expand').onclick=expand;
+                    document.getElementById('expand').innerText="<< expand >>";
+                }
+
+                function setCookie(c_name, value, exdays) {
+                    var exdate = new Date();
+                    exdate.setDate(exdate.getDate() + exdays);
+                    var c_value = escape(value) + ((exdays == null) ? "" : "; expires=" + exdate.toUTCString());
+                    document.cookie = c_name + "=" + c_value;
+                }
+
+                function getCookie(c_name) {
+                    var i, x, y, ARRcookies = document.cookie.split(";");
+                    for (i = 0; i < ARRcookies.length; i++) {
+                        x = ARRcookies[i].substr(0, ARRcookies[i].indexOf("="));
+                        y = ARRcookies[i].substr(ARRcookies[i].indexOf("=") + 1);
+                        x = x.replace(/^\s+|\s+$/g, "");
+                        if (x == c_name) {
+                            return unescape(y);
+                        }
+                    }
+                    return null;
+                }
+            </script>
         </center>
     </body>
 </html>
