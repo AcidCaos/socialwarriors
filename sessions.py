@@ -134,7 +134,7 @@ def all_userid() -> list:
 def save_info(USERID: str) -> dict:
     save = __saves[USERID]
     default_map = save["playerInfo"]["default_map"]
-    empire_name = str(save["playerInfo"]["map_names"][default_map])
+    empire_name = str(save["playerInfo"]["name"])
     xp = save["maps"][default_map]["xp"]
     level = save["maps"][default_map]["level"]
     return{"userid": USERID, "name": empire_name, "xp": xp, "level": level}

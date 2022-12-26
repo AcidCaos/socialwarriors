@@ -13,7 +13,7 @@
             <!-- SESSION HEADER -->
             <div id="header" style="width: 760px; margin-top: 50px;">
                 <div id="session" style="float: right;">
-                    <p style="display:inline">Logged in as <b>{{save_info.name}}</b> lvl {{save_info.level}} (<a href="/">logout</a>)</p>
+                    <p style="display:inline">Welcome <b>{{save_info.name}}</b>! Level {{save_info.level}} (<a href="/">Log Out</a>)</p>
                 </div>
             </div>
             <br>
@@ -125,14 +125,14 @@
                     setCookie("expand", "1", 60)
                     document.getElementById('swf').width='100%';
                     document.getElementById('expand').onclick=contract;
-                    document.getElementById('expand').innerText=">> contract <<";
+                    document.getElementById('expand').innerText=">> Contract <<";
                 }
 
                 function contract() {
                     setCookie("expand", "0", 60)
                     document.getElementById('swf').width='1090';
                     document.getElementById('expand').onclick=expand;
-                    document.getElementById('expand').innerText="<< expand >>";
+                    document.getElementById('expand').innerText="<< Expand >>";
                 }
 
                 function setCookie(c_name, value, exdays) {
