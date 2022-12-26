@@ -765,6 +765,84 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         else:
             print(f"Failed quest {quest_id}")
 
+    elif cmd == "end_attack":
+        response = None
+        unknown = args[1]
+
+        try:
+            response = json.loads(args[0])
+        except:
+            print("Error: Failed to parse command.")
+            return
+
+        if not response:
+            print("Error: Failed to parse command.")
+            return
+
+        # TODO: Parse more data in the future
+        # TODO: Affect victim player save
+        # TODO: Attack logs
+        
+        voluntary_end = True
+        victim = None # Victim info
+        attacker = None # Attacker info
+        resources = None # Which resources the attacker won
+        honor = 0 # Honor increase
+        duration = 0
+        townhall_gold = 0 # How much gold was taken from town hall?
+        win = False
+        different_island = True
+        victim_units = None
+        attacker_units = None
+        resources_victim = None # Subtract these from victim
+
+        if "voluntary_end" in response:
+            voluntary_end = response["voluntary_end"]
+        if "victim" in response:
+            victim = response["victim"]
+        if "attacker" in response:
+            attacker = response["attacker"]
+        if "resources" in response:
+            resources = response["resources"]
+        if "honor" in response:
+            honor = response["honor"]
+        if "duration" in response:
+            duration = response["duration"]
+        if "townhall_gold" in response:
+            townhall_gold = response["townhall_gold"]
+        if "win" in response:
+            win = response["win"]
+        if "different_island" in response:
+            different_island = response["different_island"]
+        if "victim_units" in response:
+            victim_units = response["victim_units"]
+        if "attacker_units" in response:
+            attacker_units = response["attacker_units"]
+        if "resources_victim" in response:
+            resources_victim = response["resources_victim"]
+        
+        # Lost units
+        privateState = save["privateState"]
+        for unit in attacker_units:
+            # item_id (not on map), sent_to_battle, A, B 
+            lost = max(0, unit[2] - unit[3]) # number of loses is A - B
+            if lost > 0:
+                item = unit[0]
+                print(f"Lost {lost} {get_name_from_item_id(unit[0])}(s)")
+                map_lose_item(map, privateState, unit[0], lost)
+
+        if "name" in victim:
+            name = victim["name"]
+            if win:
+                print(f"Won battle against {name}")
+            else:
+                print(f"Lost battle against {name}")
+        else:
+            if win:
+                print(f"Won battle")
+            else:
+                print(f"Lost battle")
+
     elif cmd == "fast_forward":
         seconds = args[0]
 
