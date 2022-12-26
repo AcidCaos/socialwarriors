@@ -265,38 +265,38 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         print("Add to store", ", ".join([get_name_from_item_id(item_id) for item_id in item_id_list]))
 
     elif cmd == "next_research_step":
-        type = args[0] # 0: TYPE_AREA_51 ,  1: TYPE_ROBOTIC
+        _type = args[0] # 0: TYPE_AREA_51 ,  1: TYPE_ROBOTIC
 
-        save["privateState"]["researchStepNumber"][type] += 1
-        save["privateState"]["timeStampDoResearch"][type] = time_now
+        save["privateState"]["researchStepNumber"][_type] += 1
+        save["privateState"]["timeStampDoResearch"][_type] = time_now
 
-        print("Research step for", ["Area 51", "Robotic Center"][type])
+        print("Research step for", ["Area 51", "Robotic Center"][_type])
 
     elif cmd == "research_buy_step_cash":
         cash = args[0]
-        type = args[1] # 0: TYPE_AREA_51 ,  1: TYPE_ROBOTIC
+        _type = args[1] # 0: TYPE_AREA_51 ,  1: TYPE_ROBOTIC
 
-        save["privateState"]["timeStampDoResearch"][type] = 0
+        save["privateState"]["timeStampDoResearch"][_type] = 0
 
-        print("Buy research step for", ["Area 51", "Robotic Center"][type])
+        print("Buy research step for", ["Area 51", "Robotic Center"][_type])
 
     elif cmd == "next_research_item":
-        type = args[0] # 0: TYPE_AREA_51 ,  1: TYPE_ROBOTIC
+        _type = args[0] # 0: TYPE_AREA_51 ,  1: TYPE_ROBOTIC
 
-        save["privateState"]["researchItemNumber"][type] += 1
-        save["privateState"]["researchStepNumber"][type] = 0
-        save["privateState"]["timeStampDoResearch"][type] = 0
+        save["privateState"]["researchItemNumber"][_type] += 1
+        save["privateState"]["researchStepNumber"][_type] = 0
+        save["privateState"]["timeStampDoResearch"][_type] = 0
 
-        print("Finished research for", ["Area 51", "Robotic Center"][type])
+        print("Finished research for", ["Area 51", "Robotic Center"][_type])
 
     elif cmd == "reset_research_item":
-        type = args[0] # 0: TYPE_AREA_51 ,  1: TYPE_ROBOTIC
+        _type = args[0] # 0: TYPE_AREA_51 ,  1: TYPE_ROBOTIC
 
-        save["privateState"]["researchItemNumber"][type] = 0
-        save["privateState"]["researchStepNumber"][type] = 0
-        save["privateState"]["timeStampDoResearch"][type] = 0
+        save["privateState"]["researchItemNumber"][_type] = 0
+        save["privateState"]["researchStepNumber"][_type] = 0
+        save["privateState"]["timeStampDoResearch"][_type] = 0
 
-        print("Reset research for", ["Area 51", "Robotic Center"][type])
+        print("Reset research for", ["Area 51", "Robotic Center"][_type])
 
     elif cmd == "flash_debug":
         cash = args[0]
@@ -842,6 +842,19 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
                 print(f"Won battle")
             else:
                 print(f"Lost battle")
+
+    elif cmd == "rt_open_graph_unit":
+        item = args[0]
+
+        privateState = save["privateState"]
+        if "publishedOpenGraphUnit" not in privateState:
+            privateState["publishedOpenGraphUnit"] = []
+        if type(privateState["publishedOpenGraphUnit"]) != list:
+            privateState["publishedOpenGraphUnit"] = []
+        if str(item) not in privateState["publishedOpenGraphUnit"]:
+            privateState["publishedOpenGraphUnit"].append(str(item))
+        
+        print(f"Open Unit Graph for {get_name_from_item_id(item)}")
 
     elif cmd == "fast_forward":
         seconds = args[0]
