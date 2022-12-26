@@ -62,6 +62,9 @@ def load_saved_villages():
             continue
         print(f" * Loading STATIC NEIGHBOUR: village at {file}... ", end='')
         village = json.load(open(os.path.join(VILLAGES_DIR, file)))
+        if not is_valid_village(village):
+            print("Invalid neighbour")
+            continue
         USERID = village["playerInfo"]["pid"]
         print("STATIC USERID:", USERID)
         __villages[str(USERID)] = village
@@ -71,6 +74,9 @@ def load_saved_villages():
             continue
         print(f" * Loading STATIC QUEST: village at {file}... ", end='')
         village = json.load(open(os.path.join(QUESTS_DIR, file)))
+        if not is_valid_village(village):
+            print("Invalid Quest")
+            continue
         USERID = village["playerInfo"]["pid"]
         print("QUEST USERID:", USERID)
         __quests[str(USERID)] = village
@@ -81,6 +87,9 @@ def load_saved_villages():
             save = json.load(open(os.path.join(SAVES_DIR, file)))
         except json.decoder.JSONDecodeError as e:
             print("Corrupted JSON.")
+            continue
+        if not is_valid_village(save):
+            print("Invalid Save")
             continue
         USERID = save["playerInfo"]["pid"]
         print("PLAYER USERID:", USERID)
@@ -176,6 +185,25 @@ def neighbors(USERID: str):
             neigh["steel"] = vill["maps"][0]["steel"]
             neighbors += [neigh]
     return neighbors
+
+# Check for valid village
+# The reason why this was implemented is to warn the user if a save game from Social Empires was used by accident
+
+def is_valid_village(save: dict):
+    if "playerInfo" not in save or "maps" not in save or "privateState" not in save:
+        # These are obvious
+        return False
+    for map in save["maps"]:
+        if "oil" not in map or "steel" not in map:
+            return False
+        if "stone" in map or "food" in map:
+            return False
+        if "items" not in map:
+            return False
+        if type(map["items"]) != dict:
+            return False
+
+    return True
 
 # Persistency
 
