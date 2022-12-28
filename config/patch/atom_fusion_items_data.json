@@ -1,0 +1,23 @@
+[
+    {
+        "op": "add",
+        "path": "/items/492/breeding_order",
+        "value": "1"
+    },
+    {
+        "op": "add",
+        "path": "/items/492/sm_training_time",
+        "value": "191000"
+    },
+    {
+        "op": "add",
+        "path": "/items/564/breeding_order",
+        "value": "2"
+    },
+    {
+        "op": "add",
+        "path": "/items/564/sm_training_time",
+        "value": "191000"
+    }
+    
+]

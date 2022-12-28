@@ -681,6 +681,20 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
             return
 
         push_queue_unit(item)
+        print("Pushed unit.")
+    
+    elif cmd == "push_queue_unit2":
+        atom_fusion_index = args[0]
+        unit_id = args[1]
+
+        atom_fusion = map_get_item(map, atom_fusion_index)
+        if not atom_fusion:
+            print("Error: Atom Fusion not found.")
+            return
+
+        # TODO
+
+        print("Pushed", get_name_from_item_id(unit_id), "to Atom Fusion.")
 
     elif cmd == "pop_queue_unit":
         index = args[0]
@@ -691,6 +705,7 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
             return
 
         pop_queue_unit(item)
+        print("Popped unit.")
 
     elif cmd == "buy_offer_pack":
         package_id = args[0]
@@ -701,6 +716,20 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
             add_store_item(map, item)
 
         print("Bought Offer Pack")
+    
+    elif cmd == "buy_powerups":
+        powerup_index = args[0]
+
+        # TODO
+
+        print("Buy Atom Fusion PowerUP")
+    
+    elif cmd == "soulmixer_speedup":
+        atom_fusion_index = args[0]
+
+        # TODO
+
+        print("Buy Atom Fusion Speedup")
 
     elif cmd == "admin_set_quest_rank":
         quest_index = args[0]
