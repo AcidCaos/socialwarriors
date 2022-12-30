@@ -5,11 +5,11 @@
         "value": [
             {
                 "cash_cost": "55",
-                "order_increment": "1"
+                "order_increment": "5"
             },
             {
                 "cash_cost": "70",
-                "order_increment": "2"
+                "order_increment": "8"
             }
         ]
     }
