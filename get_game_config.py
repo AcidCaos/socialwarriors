@@ -1,6 +1,7 @@
 import json
 import os
 import jsonpatch
+
 from bundle import MODS_DIR, CONFIG_DIR, CONFIG_PATCH_DIR
 
 __game_config = json.load(open(os.path.join(CONFIG_DIR, "main.json"), 'r', encoding='utf-8'))
@@ -27,7 +28,7 @@ def remove_duplicate_items():
         if duplicate:
             continue
 
-        print(f" * Removed {num_duplicate} duplicate items from config patches")
+        print(f" * Removed {num_duplicate} duplicate items.")
         break
 
 def apply_config_patch(filename):
@@ -36,11 +37,25 @@ def apply_config_patch(filename):
 
 def patch_game_config():
 
-    for patch_file in os.listdir(CONFIG_PATCH_DIR):
-        if patch_file.endswith(".json"):
-            f = os.path.join(CONFIG_PATCH_DIR, patch_file)
-            apply_config_patch(f)
-            print(" * Patch applied:", f)
+    if os.path.exists(os.path.join(CONFIG_PATCH_DIR, "patches.txt")):
+        with open(os.path.join(CONFIG_PATCH_DIR, "patches.txt"), "r") as f:
+            lines = f.readlines()
+            f.close()
+
+        for line in lines:
+            patch = line.strip()
+            if patch.startswith("#"):
+                continue
+            if patch != "":
+                patch = patch.replace(".json", "")
+                patch_path = f"{CONFIG_PATCH_DIR}/{patch}.json"
+                if os.path.exists(patch_path):
+                    apply_config_patch(patch_path)
+                    print(" * Patch applied:", patch)
+                else:
+                    print(" * Patch ERROR: Could not find", patch)
+
+def modify_game_config():
 
     if os.path.exists(os.path.join(MODS_DIR, "mods.txt")):
         with open(os.path.join(MODS_DIR, "mods.txt"), "r") as f:
@@ -60,10 +75,14 @@ def patch_game_config():
                 else:
                     print(" * Mod ERROR: Could not find", mod)
 
-    remove_duplicate_items()
-
-print (" [+] Applying config patches and mods...")
+print (" [+] Applying config patches...")
 patch_game_config()
+
+print (" [+] Applying config mods...")
+modify_game_config()
+
+print (" [+] Cleaning config duplicates...")
+remove_duplicate_items()
 
 def get_game_config() -> dict:
     return __game_config
