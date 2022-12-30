@@ -51,9 +51,6 @@
 {"op": "add", "path": "/items/396/breeding_order", "value": "50"},
 {"op": "add", "path": "/items/396/sm_training_time", "value": "50000"},
 
-{"op": "add", "path": "/items/397/breeding_order", "value": "65"},
-{"op": "add", "path": "/items/397/sm_training_time", "value": "65000"},
-
 {"op": "add", "path": "/items/398/breeding_order", "value": "30"},
 {"op": "add", "path": "/items/398/sm_training_time", "value": "30000"},
 
@@ -119,9 +116,6 @@
 
 {"op": "add", "path": "/items/422/breeding_order", "value": "42"},
 {"op": "add", "path": "/items/422/sm_training_time", "value": "42000"},
-
-{"op": "add", "path": "/items/423/breeding_order", "value": "90"},
-{"op": "add", "path": "/items/423/sm_training_time", "value": "90000"},
 
 {"op": "add", "path": "/items/424/breeding_order", "value": "79"},
 {"op": "add", "path": "/items/424/sm_training_time", "value": "79000"},
