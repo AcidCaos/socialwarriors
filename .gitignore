@@ -4,3 +4,4 @@ __pycache__/
 *.lnk
 saves/
 new_assets/
+tools/unit_patch_storage.json
