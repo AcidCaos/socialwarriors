@@ -42,8 +42,8 @@ def patch_game_config():
             apply_config_patch(f)
             print(" * Patch applied:", f)
 
-    if os.path.exists(os.path.join(MODS_DIR, "/mods.txt")):
-        with open(os.path.join(MODS_DIR, "/mods.txt"), "r") as f:
+    if os.path.exists(os.path.join(MODS_DIR, "mods.txt")):
+        with open(os.path.join(MODS_DIR, "mods.txt"), "r") as f:
             lines = f.readlines()
             f.close()
 
@@ -52,11 +52,13 @@ def patch_game_config():
             if mod.startswith("#"):
                 continue
             if mod != "":
-                mod.replace(".json", "")
+                mod = mod.replace(".json", "")
                 mod_path = f"{MODS_DIR}/{mod}.json"
                 if os.path.exists(mod_path):
                     apply_config_patch(mod_path)
                     print(" * Mod applied:", mod)
+                else:
+                    print(" * Mod ERROR: Could not find", mod)
 
     remove_duplicate_items()
 
