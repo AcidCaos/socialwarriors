@@ -34,6 +34,9 @@ print (" [+] Configuring server routes...")
 # ROUTES #
 ##########
 
+__STATIC_ROOT = "/static/socialwars"
+__DYNAMIC_ROOT = "/dynamic/menvswomen/srvsexwars"
+
 ## PAGES AND RESOURCES
 
 @app.route("/", methods=['GET', 'POST'])
@@ -91,31 +94,33 @@ def css(path):
 
 ## GAME STATIC
 
-@app.route("/default01.static.socialpointgames.com/static/socialwars/<path:path>")
+@app.route(__STATIC_ROOT + "/<path:path>")
 def static_assets_loader(path):
     return send_from_directory(ASSETS_DIR, path)
 
 ## GAME DYNAMIC
 
-@app.route("/dynamic.flash1.dev.socialpoint.es/appsfb/menvswomen/srvsexwars/track_game_status.php", methods=['POST'])
+@app.route(__DYNAMIC_ROOT + "/track_game_status.php", methods=['POST'])
 def track_game_status_response():
     status = request.values['status']
     installId = request.values['installId']
     user_id = request.values['user_id']
 
-    print(f"track_game_status: status={status}, installId={installId}, user_id={user_id}. --", request.values)
+    # print(f"track_game_status: status={status}, installId={installId}, user_id={user_id}. --", request.values)
+    print(f"[STATUS] USERID {user_id}: {status}")
     return ("", 200)
 
-@app.route("/dynamic.flash1.dev.socialpoint.es/appsfb/menvswomen/srvsexwars/get_game_config.php")
+@app.route(__DYNAMIC_ROOT + "/get_game_config.php")
 def get_game_config_response():
     USERID = request.values['USERID']
     user_key = request.values['user_key']
     language = request.values['language']
 
-    print(f"get_game_config: USERID: {USERID}. --", request.values)
+    # print(f"get_game_config: USERID: {USERID}. --", request.values)
+    print(f"[CONFIG] USERID {USERID}.")
     return get_game_config()
 
-@app.route("/dynamic.flash1.dev.socialpoint.es/appsfb/menvswomen/srvsexwars/get_player_info.php", methods=['POST'])
+@app.route(__DYNAMIC_ROOT + "/get_player_info.php", methods=['POST'])
 def get_player_info_response():
     USERID = request.values['USERID']
     user_key = request.values['user_key']
@@ -125,7 +130,9 @@ def get_player_info_response():
     client_id = int(request.values['client_id']) if 'client_id' in request.values else None
     map = int(request.values['map']) if 'map' in request.values else None
 
-    print(f"get_player_info: USERID: {USERID}. --", request.values)
+    # print(f"get_player_info: USERID: {USERID}. --", request.values)
+    if not user: print(f"[PLAYER INFO] USERID {USERID}.")
+    else:        print(f"[VISIT] USERID {USERID} visiting user: {user}.")
 
     # Current Player
     if user is None:
@@ -141,20 +148,13 @@ def get_player_info_response():
         return (get_neighbor_info(user, map), 200)
     
 
-@app.route("/dynamic.flash1.dev.socialpoint.es/appsfb/menvswomen/srvsexwars/sync_error_track.php", methods=['POST'])
+@app.route(__DYNAMIC_ROOT + "/sync_error_track.php", methods=['POST'])
 def sync_error_track_response():
     USERID = request.values['USERID']
     user_key = request.values['user_key']
     language = request.values['language']
-    # error = request.values['error']
-    # current_failed = request.values['current_failed']
-    # tries = request.values['tries'] if 'tries' in request.values else None
-    # survival = request.values['survival']
-    # previous_failed = request.values['previous_failed']
-    # description = request.values['description']
-    # user_id = request.values['user_id']
 
-    # print(f"sync_error_track: USERID: {USERID}. [Error: {error}] tries: {tries}. --", request.values)
+    # print(f"sync_error_track: USERID: {USERID}. --", request.values)
     return ("", 200)
 
 @app.route("/null")
@@ -171,7 +171,7 @@ def flash_sync_error_response():
     print("flash_sync_error", reason, ". --", request.values)
     return redirect("/play.html")
 
-@app.route("/dynamic.flash1.dev.socialpoint.es/appsfb/menvswomen/srvsexwars/command.php", methods=['POST'])
+@app.route(__DYNAMIC_ROOT + "/command.php", methods=['POST'])
 def command_response():
     USERID = request.values['USERID']
     user_key = request.values['user_key']
