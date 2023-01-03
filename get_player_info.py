@@ -21,6 +21,13 @@ def get_player_info(USERID):
     return player_info
 
 def get_neighbor_info(userid, map_number):
+    _session = neighbor_session(userid)
+    if not _session:
+        print(f"USERID {userid} not found.")
+        return ""
+    if "playerInfo" not in _session or "maps" not in _session or "privateState" not in _session:
+        print(f"USERID {userid} not found.")
+        return ""
     _map_number = map_number
     if not map_number:
         _map_number = 0
