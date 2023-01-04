@@ -5,11 +5,13 @@ from get_game_config import get_attribute_from_item_id
 def timestamp_now():
     return int(time.time())
 
-def map_add_item(map: dict, index: int, item: int, x: int, y: int, orientation: int = 0, timestamp: int = timestamp_now(), attr: dict = None, store: list = None, player: int = 1):
+def map_add_item(map: dict, index: int, item: int, x: int, y: int, orientation: int = 0, timestamp: int = None, attr: dict = None, store: list = None, player: int = 1):
     if not attr:
         attr = {}
     if not store:
         store = []
+    if not timestamp:
+        timestamp = timestamp_now()
     if player == 1:
         # if building is assigned to player, activate some properties
         # properties
