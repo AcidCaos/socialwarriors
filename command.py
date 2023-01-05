@@ -235,13 +235,13 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         x = args[2]
         y = args[3]
         playerID = args[4]
-        frame = args[5] # one of these might be timestamp
+        orientation = args[5]
         unknown_autoactivable_bool = args[6]
         unknown_imgIndex = args[7] # one of these might be timestamp
         name = str(get_name_from_item_id(item_id))
 
         remove_store_item(map, item_id)
-        map_add_item(map, item_index, item_id, x, y)
+        map_add_item(map, item_index, item_id, x, y, orientation=orientation)
         bought_unit_add(save, item_id)
 
         print(f"Placed stored {name}.")
