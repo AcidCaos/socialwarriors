@@ -885,6 +885,12 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         
         print(f"Open Unit Graph for {get_name_from_item_id(item)}")
 
+    elif cmd == "first_time_marketplace":
+        privateState = save["privateState"]
+        privateState["marketPlaceFirstTime"] = True
+        
+        print("Seen Auction House")
+
     elif cmd == "fast_forward":
         seconds = args[0]
 

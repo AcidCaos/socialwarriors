@@ -147,6 +147,78 @@ def get_player_info_response():
     else:
         return (get_neighbor_info(user, map), 200)
     
+## AUCTION HOUSE
+
+@app.route(__DYNAMIC_ROOT + "/bets/get_bets_list.php", methods=['POST'])
+def get_bets_list():
+    USERID = request.values['USERID']
+    user_key = request.values['user_key']
+    language = request.values['language']
+    data = request.values['data']
+
+    bets = []
+    for bet in bets:
+        bet["isPrivate"] =  0
+        bet["isWinning"] =  0
+        bet["won"] =  0
+        bet["finished"] =  0
+
+    r = {}
+    r["result"] = "success"
+    r["data"] = {"bets": bets}
+
+    response = json.dumps(r)
+    # print("RESPONSE:")
+    # print(response)
+
+    return (response, 200)
+
+@app.route(__DYNAMIC_ROOT + "/bets/get_bet_detail.php", methods=['POST'])
+def get_bet_detail():
+    USERID = request.values['USERID']
+    user_key = request.values['user_key']
+    language = request.values['language']
+    data = request.values['data']
+
+    if not data.startswith("{"):
+        data = data[65:]
+    
+    data = json.loads(data)
+    uuid = data["uuid"]
+
+    print(f"Get bet details for BET UUID {uuid}")
+
+    r = {}
+    r["result"] = "success"
+    r["data"] = {}
+
+    response = json.dumps(r)
+    # print("RESPONSE:")
+    # print(response)
+
+    return (response, 200)
+
+@app.route(__DYNAMIC_ROOT + "/bets/set_bet.php", methods=['POST'])
+def set_bet():
+    USERID = request.values['USERID']
+    user_key = request.values['user_key']
+    language = request.values['language']
+    data = request.values['data']
+
+    if not data.startswith("{"):
+        data = data[65:]
+    
+    data = json.loads(data)
+
+    r = {}
+    r["result"] = "success"
+    r["data"] = {}
+
+    response = json.dumps(r)
+    # print("RESPONSE:")
+    # print(response)
+
+    return (response, 200)
 
 @app.route(__DYNAMIC_ROOT + "/sync_error_track.php", methods=['POST'])
 def sync_error_track_response():
