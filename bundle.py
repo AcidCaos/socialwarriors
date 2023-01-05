@@ -20,3 +20,4 @@ BASE_DIR = "."
 # ASSETS_DIR = os.path.join(BASE_DIR, "assets")
 MODS_DIR = os.path.join(BASE_DIR, "mods")
 SAVES_DIR = os.path.join(BASE_DIR, "saves")
+AUCTIONS_DIR = os.path.join(BASE_DIR, "auctions")

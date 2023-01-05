@@ -15,6 +15,8 @@ from get_player_info import get_player_info, get_neighbor_info
 from sessions import load_saved_villages, all_saves_userid, all_saves_info, save_info, new_village
 load_saved_villages()
 
+print (" [+] Loading auction house data...")
+from auctions import get_auctions
 print (" [+] Loading server...")
 from flask import Flask, render_template, send_from_directory, request, redirect, session
 from flask.debughelpers import attach_enctype_error_multidict
@@ -156,7 +158,7 @@ def get_bets_list():
     language = request.values['language']
     data = request.values['data']
 
-    bets = []
+    bets = get_auctions()
     for bet in bets:
         bet["isPrivate"] =  0
         bet["isWinning"] =  0
