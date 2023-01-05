@@ -1,0 +1,28 @@
+{
+	"1": {
+		"uuid": "1",
+		"idUnit": "1167",
+		"level": "3",
+		"beginDate": 1672952302,
+		"endDate": 1672955302,
+		"beginPrice": 5000,
+		"currentPrice": 5000,
+		"priceIncrement": 1000,
+		"betPrice": 2,
+		"round": 1,
+		"finished": 0
+	},
+	"2": {
+		"uuid": "2",
+		"idUnit": "1168",
+		"level": "5",
+		"beginDate": 1672952302,
+		"endDate": 1672955302,
+		"beginPrice": 500,
+		"currentPrice": 500,
+		"priceIncrement": 100,
+		"betPrice": 2,
+		"round": 1,
+		"finished": 0
+	}
+}
