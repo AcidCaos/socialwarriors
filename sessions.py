@@ -9,23 +9,19 @@ from flask import session
 from version import version_code
 from engine import timestamp_now
 from version import migrate_loaded_save
-
+from constants import Quests
 from bundle import VILLAGES_DIR, QUESTS_DIR, SAVES_DIR
 
 __villages = {}  # ALL static neighbors
 __quests = {}  # ALL static quests
-'''__villages = {
-    "USERID_1": {
-        "playerInfo": {...},
-        "maps": [{...},{...}]
-        "privateState": {...}
-    },
-    "USERID_2": {...}
-}'''
 __saves = {}  # ALL saved villages
 '''__saves = {
     "USERID_1": {
-        "playerInfo": {...},
+        "playerInfo": {.
+            ...
+            "pid": "USERID_1",
+            ...
+        },
         "maps": [{...},{...}]
         "privateState": {...}
     },
@@ -36,15 +32,12 @@ __initial_village = json.load(open(os.path.join(VILLAGES_DIR, "initial.json")))
 
 # Load saved villages
 
-def load_saved_villages():
-    global __villages
-    global __quests
+def load_saves():
     global __saves
 
     # Empty in memory
-    __villages = {}
-    __quests = {}
     __saves = {}
+
     # Saves dir check
     if not os.path.exists(SAVES_DIR):
         try:
@@ -56,30 +49,7 @@ def load_saved_villages():
     if not os.path.isdir(SAVES_DIR):
         print(f"'{SAVES_DIR}' is not a folder... Move the file somewhere else.")
         exit(1)
-    # Static neighbors in /villages
-    for file in os.listdir(VILLAGES_DIR):
-        if file == "initial.json" or not file.endswith(".json"):
-            continue
-        print(f" * Loading STATIC NEIGHBOUR: village at {file}... ", end='')
-        village = json.load(open(os.path.join(VILLAGES_DIR, file)))
-        if not is_valid_village(village):
-            print("Invalid neighbour")
-            continue
-        USERID = village["playerInfo"]["pid"]
-        print("STATIC USERID:", USERID)
-        __villages[str(USERID)] = village
-    # Static quests in /villages/quest
-    for file in os.listdir(QUESTS_DIR):
-        if file == "initial.json" or not file.endswith(".json"):
-            continue
-        print(f" * Loading STATIC QUEST: village at {file}... ", end='')
-        village = json.load(open(os.path.join(QUESTS_DIR, file)))
-        if not is_valid_village(village):
-            print("Invalid Quest")
-            continue
-        USERID = village["playerInfo"]["pid"]
-        print("QUEST USERID:", USERID)
-        __quests[str(USERID)] = village
+
     # Saves in /saves
     for file in os.listdir(SAVES_DIR):
         print(f" * Loading SAVE: village at {file}... ", end='')
@@ -97,6 +67,44 @@ def load_saved_villages():
         modified = migrate_loaded_save(save) # check save version for migration
         if modified:
             save_session(USERID)
+
+def load_static_villages():
+    global __villages
+
+    # Empty in memory
+    __villages = {}
+
+    # Static neighbors in /villages
+    for file in os.listdir(VILLAGES_DIR):
+        if file == "initial.json" or not file.endswith(".json"):
+            continue
+        print(f" * Loading STATIC NEIGHBOUR: village at {file}... ", end='')
+        village = json.load(open(os.path.join(VILLAGES_DIR, file)))
+        if not is_valid_village(village):
+            print("Invalid neighbour")
+            continue
+        USERID = village["playerInfo"]["pid"]
+        print("STATIC USERID:", USERID)
+        __villages[str(USERID)] = village
+
+def load_quests():
+    global __quests
+
+    # Empty in memory
+    __quests = {}
+
+    # Static quests in /villages/quest
+    for file in os.listdir(QUESTS_DIR):
+        print(f" * Loading ", end='')
+        village = json.load(open(os.path.join(QUESTS_DIR, file)))
+        if not is_valid_village(village):
+            print("Invalid Quest")
+            continue
+        QUESTID = village["playerInfo"]["pid"]
+        assert file.split(".")[0] == QUESTID
+        quest_name = Quests.QUEST[QUESTID] if QUESTID in Quests.QUEST else "?"
+        print(quest_name)
+        __quests[str(QUESTID)] = village
 
 # New village
 
@@ -129,7 +137,8 @@ def all_saves_userid() -> list:
 
 def all_userid() -> list:
     "Returns a list of the USERID of every village."
-    return list(__villages.keys()) + list(__saves.keys())
+    return list(__villages.keys()) + list(__saves.keys()) + list(__quests.keys())
+    # return [i["playerInfo"]["pid"] for i in __villages] + [i["playerInfo"]["pid"] for i in __quests] + [i["playerInfo"]["pid"] for i in __saves]
 
 def save_info(USERID: str) -> dict:
     save = __saves[USERID]

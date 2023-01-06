@@ -4,16 +4,19 @@ import json
 import urllib
 if os.name == 'nt':
     os.system("color")
-
-os.system("title Social Wars Server")
+    os.system("title Social Wars Server")
 
 print (" [+] Loading game config...")
 from get_game_config import get_game_config
 
 print (" [+] Loading players...")
 from get_player_info import get_player_info, get_neighbor_info
-from sessions import load_saved_villages, all_saves_userid, all_saves_info, save_info, new_village
-load_saved_villages()
+from sessions import load_saves, load_static_villages, load_quests, all_saves_userid, all_saves_info, save_info, new_village
+load_saves()
+print (" [+] Loading static villages...")
+load_static_villages()
+print (" [+] Loading quests...")
+load_quests()
 
 print (" [+] Loading auction house data...")
 from auctions import get_auctions
@@ -46,8 +49,8 @@ def login():
     # Log out previous session
     session.pop('USERID', default=None)
     session.pop('GAMEVERSION', default=None)
-    # Reload saves. Allows saves modification without server reset
-    load_saved_villages()
+    # Reload saves (not static villages nor quests). Allows saves modification without server reset
+    load_saves()
     # If logging in, set session USERID, and go to play
     if request.method == 'POST':
         session['USERID'] = request.form['USERID']
