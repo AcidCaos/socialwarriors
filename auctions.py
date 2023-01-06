@@ -1,14 +1,175 @@
 import json
 import os
 
-from bundle import AUCTIONS_DIR
+from bundle import AUCTIONS_DIR, CONFIG_DIR
+from engine import timestamp_now
+from get_game_config import get_name_from_item_id
 
-__auctions = json.load(open(os.path.join(AUCTIONS_DIR, "auctions.json")))
+class AuctionHouse():
+    def __init__(self):
+        # PATHS
+        self.PATH_AH_CONFIG = CONFIG_DIR
+        self.FILE_AH_CONFIG = os.path.join(self.PATH_AH_CONFIG, "auctionhouse.json")
 
-def get_auctions():
-    bets = []
+        self.PATH_AH_STATE = AUCTIONS_DIR
+        self.FILE_AH_STATE = os.path.join(self.PATH_AH_STATE, "auctions.json")
 
-    for uuid in __auctions:
-        bets.append(json.loads(json.dumps(__auctions[uuid])))
+        # CONFIG
+        self.config = {
+            "auctions": []
+        }
+        if os.path.exists(self.FILE_AH_CONFIG):
+            self.config = json.load(open(self.FILE_AH_CONFIG))
+        else:
+            print("No Auction House config exists")
 
-    return bets
+        # STATE
+        self.auction_state = {
+            "auctions": {}
+        }
+        if not os.path.exists(self.PATH_AH_STATE):
+            os.makedirs(self.PATH_AH_STATE)
+        if os.path.exists(self.FILE_AH_CONFIG):
+            self.auction_state = json.load(open(self.FILE_AH_STATE))
+            self.auctions = self.auction_state["auctions"]
+
+        self.init_auctions()
+
+    def init_auctions(self):
+        updated = self._remove_auctions()
+        updated |= self.update_all_auctions(timestamp_now(), update=False)
+
+        if updated:
+            self._write_state()
+
+    def update_all_auctions(self, time_now: int, update: bool = True):
+        updated = False
+        for auction in self.config["auctions"]:
+            updated |= self.update_auction(auction, time_now)
+
+        if update and updated:
+            self._write_state()
+
+        return updated
+
+    def _remove_auctions(self):
+        # Remove auctions that don't exist in config anymore to allow for changes
+        to_delete = []
+        for uuid in self.auctions:
+            if not self.get_auction_config(uuid):
+                to_delete.append(uuid)
+        for uuid in to_delete:
+            name = get_name_from_item_id(self.auctions[uuid]["idUnit"])
+            print(f"Deleted auction for {name} -> UUID: {uuid}")
+            del self.auctions[uuid]
+        return len(to_delete) > 0
+
+    def get_auction_config(self, uuid: str):
+        for auction in self.config["auctions"]:
+            if auction["uuid"] == uuid:
+                return auction
+
+        return None
+
+    def update_auction(self, auction: dict, time_now: int):
+        uuid = str(auction["uuid"])
+        seconds = auction["interval"] * 60
+
+        updated = False
+        if uuid in self.auctions:
+            updated |= self._update_auction(self.auctions[uuid], uuid, auction, seconds, time_now)
+        else:
+            updated |= self._create_auction(uuid, auction, seconds, time_now)
+
+        return updated    
+
+    # Creates auction on AH
+    def _create_auction(self, uuid: str, auction: dict, seconds: int, time_now: int):
+        bet = {
+            "uuid": uuid,
+            "idUnit": auction["unit"],
+            "level": auction["level"],
+            "beginDate": time_now,
+            "endDate": time_now + seconds,
+            "beginPrice": auction["price"],
+            "currentPrice": auction["price"],
+            "priceIncrement": auction["priceIncrement"],
+            "betPrice": auction["betPrice"],
+            "round": 1,
+            "betUsers": [],
+            "betUsersPrev": [],
+        }
+
+        self.auctions[uuid] = bet
+
+        name = get_name_from_item_id(auction["unit"])
+        print(f"Created auction for {name} as it didn't exist! -> UUID: {uuid}")
+        return True
+
+    # Updates existing auction on AH
+    def _update_auction(self, bet: dict, uuid: str, auction: dict, seconds: int, time_now: int):
+        if bet["idUnit"] != auction["unit"]:
+            # If unit on AH state is no longer in config, overwrite it
+            return self._create_auction(uuid, auction, seconds, time_now)
+
+        # Just see if it needs updating
+        if time_now > bet["endDate"]:
+            difference = time_now - bet["endDate"]
+            
+            # TODO: rounds
+
+            # How many times this item has expired
+            count_expired = difference // seconds
+            # How many seconds should have passed since new entry was generated
+            remaining = difference % seconds
+
+            bet["level"] = auction["level"]
+            bet["beginDate"] = time_now - remaining
+            bet["endDate"] = bet["beginDate"] + seconds
+            bet["beginPrice"] = auction["price"]
+            bet["currentPrice"] = auction["price"]
+            bet["priceIncrement"] = auction["priceIncrement"]
+            bet["betPrice"] = auction["betPrice"]
+            bet["round"] = 1,
+            bet["betUsers"] = [],
+            bet["betUsersPrev"] = []
+
+            # print(json.dumps(bet, indent="\t"))
+
+            name = get_name_from_item_id(auction["unit"])
+            print(f"Restarted auction for {name} as it expired! -> UUID: {uuid}")
+            return True
+
+        return False
+
+    def _write_state(self):
+        try:
+            with open(self.FILE_AH_STATE, 'w') as f:
+                json.dump(self.auction_state, f, indent="\t")
+        except:
+            print("Error: Could not write Auction House state to disk!")
+
+## FOR SERVER
+
+    def get_auctions(self, user_id: str, level: int):
+        self.update_all_auctions(timestamp_now())
+
+        bets = []
+
+        for uuid in self.auctions:
+            bet = json.loads(json.dumps(self.auctions[uuid]))
+            bets.append(bet)
+
+        return bets
+
+    def get_auction_detail(self, uuid: str):
+        if uuid in self.auctions:
+            auction_data = self.get_auction_config(uuid)
+            if not auction_data:
+                return None
+            if self.update_auction(auction_data, timestamp_now()):
+                self._write_state()
+            bet = json.loads(json.dumps(self.auctions[uuid]))
+            return bet
+
+        return None

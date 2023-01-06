@@ -19,7 +19,9 @@ print (" [+] Loading quests...")
 load_quests()
 
 print (" [+] Loading auction house data...")
-from auctions import get_auctions
+from auctions import AuctionHouse
+auction_house = AuctionHouse()
+
 print (" [+] Loading server...")
 from flask import Flask, render_template, send_from_directory, request, redirect, session
 from flask.debughelpers import attach_enctype_error_multidict
@@ -166,7 +168,14 @@ def get_bets_list():
     language = request.values['language']
     data = request.values['data']
 
-    bets = get_auctions()
+    if not data.startswith("{"):
+        data = data[65:]
+    
+    data = json.loads(data)
+    user_id = data["user_id"]
+    level = data["level"]
+
+    bets = auction_house.get_auctions(user_id, level)
     for bet in bets:
         bet["isPrivate"] =  0
         bet["isWinning"] =  0
@@ -189,22 +198,29 @@ def get_bet_detail():
     user_key = request.values['user_key']
     language = request.values['language']
     data = request.values['data']
-
+    
     if not data.startswith("{"):
         data = data[65:]
     
     data = json.loads(data)
     uuid = data["uuid"]
 
+    bet = auction_house.get_auction_detail(uuid)
+    bet["isPrivate"] =  0
+    bet["isWinning"] =  0
+    bet["won"] =  0
+    bet["finished"] =  0
+
     print(f"Get bet details for BET UUID {uuid}")
+    print(json.dumps(data, indent="\t"))
 
     r = {}
     r["result"] = "success"
-    r["data"] = {}
+    r["data"] = bet
 
-    response = json.dumps(r)
-    # print("RESPONSE:")
-    # print(response)
+    response = json.dumps(r, indent="\t")
+    print("RESPONSE:")
+    print(response)
 
     return (response, 200)
 
@@ -219,10 +235,13 @@ def set_bet():
         data = data[65:]
     
     data = json.loads(data)
+    print(json.dumps(data, indent="\t"))
 
     r = {}
     r["result"] = "success"
-    r["data"] = {}
+    r["data"] = {
+        "betResult": "OK"
+    }
 
     response = json.dumps(r)
     # print("RESPONSE:")
