@@ -1,20 +1,32 @@
-[
-	{
-		"uuid": 1,
-		"unit": 1167,
-		"levels": [ 1, 2, 3, 4 ],
-		"interval": 7200,
-		"price": [ 5000, 6250, 7500, 8750 ],
-		"priceIncrement": [ 1000, 1000, 1000, 1000 ],
-		"betPrice": 2
-	},
-	{
-		"uuid": 2,
-		"unit": 1168,
-		"levels": [ 1, 2, 3, 4 ],
-		"interval": 3600,
-		"price": [ 1000, 1250, 1500, 1750 ],
-		"priceIncrement": [ 200, 200, 200, 200 ],
-		"betPrice": 2
-	}
-]
+{
+	"auctions":
+	[
+		{
+			"uuid": "1",
+			"unit": 1167,
+			"level": 1,
+			"interval": 120,
+			"price": 5000,
+			"priceIncrement": 1000,
+			"betPrice": 2
+		},
+		{
+			"uuid": "2",
+			"unit": 1168,
+			"level": 1,
+			"interval": 60,
+			"price": 1000,
+			"priceIncrement": 200,
+			"betPrice": 2
+		},
+		{
+			"uuid": "3",
+			"unit": 1226,
+			"level": 2,
+			"interval": 120,
+			"price": 8000,
+			"priceIncrement": 1500,
+			"betPrice": 2
+		}
+	]
+}
