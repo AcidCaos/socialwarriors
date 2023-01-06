@@ -2,6 +2,9 @@ print (" [+] Loading basics...")
 import os
 import json
 import urllib
+import requests
+import io
+
 if os.name == 'nt':
     os.system("color")
     os.system("title Social Wars Server")
@@ -21,12 +24,13 @@ load_quests()
 print (" [+] Loading auction house data...")
 from auctions import get_auctions
 print (" [+] Loading server...")
-from flask import Flask, render_template, send_from_directory, request, redirect, session
+from flask import Flask, render_template, send_from_directory, request, redirect, session, send_file
 from flask.debughelpers import attach_enctype_error_multidict
 from command import command
 from engine import timestamp_now
 from version import version_name
 from bundle import ASSETS_DIR, STUB_DIR, TEMPLATES_DIR, BASE_DIR
+from constants import Quests
 
 host = '127.0.0.1'
 port = 5055
@@ -101,6 +105,18 @@ def css(path):
 
 @app.route(__STATIC_ROOT + "/<path:path>")
 def static_assets_loader(path):
+    # LITE-WEIGHT BUILD: ASSETS FROM GITHUB
+    if False:
+        # cdn = "https://github.com/AcidCaos/socialwarriors/raw/main/assets/"
+        cdn = "https://raw.githubusercontent.com/AcidCaos/socialwarriors/main/assets/"
+        try:
+            r = requests.get(cdn + path) # TODO timeout, retry
+        except requests.exceptions:
+            return ""
+        m = io.BytesIO(r.content)
+        m.seek(0)
+        return send_file(m, download_name=path.split("/")[-1:][0])
+    # OFFLINE BUILD
     return send_from_directory(ASSETS_DIR, path)
 
 ## GAME DYNAMIC
@@ -136,20 +152,22 @@ def get_player_info_response():
     map = int(request.values['map']) if 'map' in request.values else None
 
     # print(f"get_player_info: USERID: {USERID}. --", request.values)
-    if not user: print(f"[PLAYER INFO] USERID {USERID}.")
-    else:        print(f"[VISIT] USERID {USERID} visiting user: {user}.")
 
     # Current Player
     if user is None:
+        print(f"[PLAYER INFO] USERID {USERID}.")
         return (get_player_info(USERID), 200)
     # General Mike
     elif user in ["100000030","100000031"]:
+        print(f"[VISIT] USERID {USERID} visiting General Mike ({user}).")
         return (get_neighbor_info("100000030", map), 200)
     # Quest Maps
     elif user.startswith("100000"):
+        print(f"[QUEST] USERID {USERID} loading", Quests.QUEST[user] if user in Quests.QUEST else "?", f"({user}).")
         return (get_neighbor_info(user, map), 200)
     # Static Neighbours
     else:
+        print(f"[VISIT] USERID {USERID} visiting user: {user}.")
         return (get_neighbor_info(user, map), 200)
     
 ## AUCTION HOUSE
