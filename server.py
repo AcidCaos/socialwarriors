@@ -93,6 +93,11 @@ def crossdomain():
 def images(path):
     return send_from_directory(TEMPLATES_DIR + "/img", path)
 
+
+@app.route("/avatars/<path:path>")
+def avatars(path):
+    return send_from_directory(TEMPLATES_DIR + "/avatars", path)
+
 @app.route("/css/<path:path>")
 def css(path):
     return send_from_directory(TEMPLATES_DIR + "/css", path)
