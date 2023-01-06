@@ -98,6 +98,9 @@ class AuctionHouse():
             "round": 1,
             "betUsers": [],
             "betUsersPrev": [],
+            "bidders": [],
+            "prevRoundBidders": [],
+            "userRounds": []
         }
 
         self.auctions[uuid] = bet
@@ -114,6 +117,8 @@ class AuctionHouse():
 
         # Just see if it needs updating
         if time_now > bet["endDate"]:
+            if len(bet["betUsers"]) > 0 and time_now - bet["endDate"] < 60:
+                return False
             difference = time_now - bet["endDate"]
             
             # TODO: rounds
@@ -130,9 +135,12 @@ class AuctionHouse():
             bet["currentPrice"] = auction["price"]
             bet["priceIncrement"] = auction["priceIncrement"]
             bet["betPrice"] = auction["betPrice"]
-            bet["round"] = 1,
-            bet["betUsers"] = [],
+            bet["round"] = 1
+            bet["betUsers"] = []
             bet["betUsersPrev"] = []
+            bet["bidders"] = []
+            bet["prevRoundBidders"] = []
+            bet["userRounds"] = []
 
             # print(json.dumps(bet, indent="\t"))
 
@@ -149,7 +157,48 @@ class AuctionHouse():
         except:
             print("Error: Could not write Auction House state to disk!")
 
+    def _set_bet_flags(self, bet: dict, user_id: str, checkFinish: int = 0):
+        # Manage some flags
+        bet["isPrivate"] = 0
+        bet["isWinning"] = 0
+        bet["won"] = 1
+        bet["finished"] = timestamp_now() >= bet["endDate"]
+        bet["betDetail"] = []
+
+        betUsers = bet["betUsers"]
+        if len(betUsers) > 0:
+            last = max(0, len(betUsers) - 1)
+            user = betUsers[last]
+            if user["user_id"] == user_id:
+                bet["isWinning"] = 1
+            if checkFinish:
+                if bet["isWinning"]:
+                    bet["betWinner"] = user_id
+
 ## FOR SERVER
+
+    def set_bet(self, user_id: str, uuid: str, bet_amount: int, bet_round: int):
+        if uuid in self.auctions:
+            auction = self.auctions[uuid]
+
+            user = {
+                "user_id": user_id,
+                "fb_name": "Test",
+                "bet": bet_amount,
+                "fb_picture": ""
+            }
+            bidder = {
+                "user_id": user_id,
+                "fb_name": "Test",
+                "bet": bet_amount,
+                "fb_picture": ""
+            }
+
+            auction["betUsers"].append(user)
+            auction["bidders"].append(bidder)
+            auction["currentPrice"] = bet_amount + auction["priceIncrement"]
+
+        pass
 
     def get_auctions(self, user_id: str, level: int):
         self.update_all_auctions(timestamp_now())
@@ -158,11 +207,14 @@ class AuctionHouse():
 
         for uuid in self.auctions:
             bet = json.loads(json.dumps(self.auctions[uuid]))
+
+            self._set_bet_flags(bet, user_id)
+
             bets.append(bet)
 
         return bets
 
-    def get_auction_detail(self, uuid: str):
+    def get_auction_detail(self, user_id: str, uuid: str, checkFinish: int):
         if uuid in self.auctions:
             auction_data = self.get_auction_config(uuid)
             if not auction_data:
@@ -170,6 +222,9 @@ class AuctionHouse():
             if self.update_auction(auction_data, timestamp_now()):
                 self._write_state()
             bet = json.loads(json.dumps(self.auctions[uuid]))
+
+            self._set_bet_flags(bet, user_id, checkFinish)
+
             return bet
 
         return None

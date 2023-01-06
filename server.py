@@ -222,12 +222,11 @@ def get_bet_detail():
     
     data = json.loads(data)
     uuid = data["uuid"]
+    checkFinish = 0
+    if "checkFinish" in data:
+        checkFinish = data["checkFinish"]
 
-    bet = auction_house.get_auction_detail(uuid)
-    bet["isPrivate"] =  0
-    bet["isWinning"] =  0
-    bet["won"] =  0
-    bet["finished"] =  0
+    bet = auction_house.get_auction_detail(USERID, uuid, checkFinish)
 
     print(f"Get bet details for BET UUID {uuid}")
     print(json.dumps(data, indent="\t"))
@@ -253,7 +252,13 @@ def set_bet():
         data = data[65:]
     
     data = json.loads(data)
+    uuid = data["uuid"]
+    bet_amount = data["bet"]
+    bet_round = data["round"]
+
     print(json.dumps(data, indent="\t"))
+
+    auction_house.set_bet(USERID, uuid, bet_amount, bet_round)
 
     r = {}
     r["result"] = "success"
