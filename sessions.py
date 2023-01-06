@@ -185,7 +185,7 @@ def neighbors(USERID: str):
     for key in __saves:
         vill = __saves[key]
         if vill["playerInfo"]["pid"] != USERID:
-            neigh = vill["playerInfo"]
+            neigh = json.loads(json.dumps(vill["playerInfo"])) # Stop clogging up playerInfo when just wanting to send some data from save from a neighbour
             neigh["xp"] = vill["maps"][0]["xp"]
             neigh["level"] = vill["maps"][0]["level"]
             neigh["gold"] = vill["maps"][0]["gold"]
