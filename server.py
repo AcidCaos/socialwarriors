@@ -21,9 +21,9 @@ load_static_villages()
 print (" [+] Loading quests...")
 load_quests()
 
-print (" [+] Loading auction house data...")
-from auctions import AuctionHouse
-auction_house = AuctionHouse()
+# print (" [+] Loading auction house data...")
+# from auctions import AuctionHouse
+# auction_house = AuctionHouse()
 
 print (" [+] Loading server...")
 from flask import Flask, render_template, send_from_directory, request, redirect, session, send_file
@@ -179,98 +179,98 @@ def get_player_info_response():
     
 ## AUCTION HOUSE
 
-@app.route(__DYNAMIC_ROOT + "/bets/get_bets_list.php", methods=['POST'])
-def get_bets_list():
-    USERID = request.values['USERID']
-    user_key = request.values['user_key']
-    language = request.values['language']
-    data = request.values['data']
-
-    if not data.startswith("{"):
-        data = data[65:]
-    
-    data = json.loads(data)
-    user_id = data["user_id"]
-    level = data["level"]
-
-    bets = auction_house.get_auctions(user_id, level)
-    for bet in bets:
-        bet["isPrivate"] =  0
-        bet["isWinning"] =  0
-        bet["won"] =  0
-        bet["finished"] =  0
-
-    r = {}
-    r["result"] = "success"
-    r["data"] = {"bets": bets}
-
-    response = json.dumps(r)
-    # print("RESPONSE:")
-    # print(response)
-
-    return (response, 200)
-
-@app.route(__DYNAMIC_ROOT + "/bets/get_bet_detail.php", methods=['POST'])
-def get_bet_detail():
-    USERID = request.values['USERID']
-    user_key = request.values['user_key']
-    language = request.values['language']
-    data = request.values['data']
-    
-    if not data.startswith("{"):
-        data = data[65:]
-    
-    data = json.loads(data)
-    uuid = data["uuid"]
-    checkFinish = 0
-    if "checkFinish" in data:
-        checkFinish = data["checkFinish"]
-
-    bet = auction_house.get_auction_detail(USERID, uuid, checkFinish)
-
-    print(f"Get bet details for BET UUID {uuid}")
-    print(json.dumps(data, indent="\t"))
-
-    r = {}
-    r["result"] = "success"
-    r["data"] = bet
-
-    response = json.dumps(r, indent="\t")
-    print("RESPONSE:")
-    print(response)
-
-    return (response, 200)
-
-@app.route(__DYNAMIC_ROOT + "/bets/set_bet.php", methods=['POST'])
-def set_bet():
-    USERID = request.values['USERID']
-    user_key = request.values['user_key']
-    language = request.values['language']
-    data = request.values['data']
-
-    if not data.startswith("{"):
-        data = data[65:]
-    
-    data = json.loads(data)
-    uuid = data["uuid"]
-    bet_amount = data["bet"]
-    bet_round = data["round"]
-
-    print(json.dumps(data, indent="\t"))
-
-    auction_house.set_bet(USERID, uuid, bet_amount, bet_round)
-
-    r = {}
-    r["result"] = "success"
-    r["data"] = {
-        "betResult": "OK"
-    }
-
-    response = json.dumps(r)
-    # print("RESPONSE:")
-    # print(response)
-
-    return (response, 200)
+# @app.route(__DYNAMIC_ROOT + "/bets/get_bets_list.php", methods=['POST'])
+# def get_bets_list():
+#     USERID = request.values['USERID']
+#     user_key = request.values['user_key']
+#     language = request.values['language']
+#     data = request.values['data']
+# 
+#     if not data.startswith("{"):
+#         data = data[65:]
+#     
+#     data = json.loads(data)
+#     user_id = data["user_id"]
+#     level = data["level"]
+# 
+#     bets = auction_house.get_auctions(user_id, level)
+#     for bet in bets:
+#         bet["isPrivate"] =  0
+#         bet["isWinning"] =  0
+#         bet["won"] =  0
+#         bet["finished"] =  0
+# 
+#     r = {}
+#     r["result"] = "success"
+#     r["data"] = {"bets": bets}
+# 
+#     response = json.dumps(r)
+#     # print("RESPONSE:")
+#     # print(response)
+# 
+#     return (response, 200)
+# 
+# @app.route(__DYNAMIC_ROOT + "/bets/get_bet_detail.php", methods=['POST'])
+# def get_bet_detail():
+#     USERID = request.values['USERID']
+#     user_key = request.values['user_key']
+#     language = request.values['language']
+#     data = request.values['data']
+#     
+#     if not data.startswith("{"):
+#         data = data[65:]
+#     
+#     data = json.loads(data)
+#     uuid = data["uuid"]
+#     checkFinish = 0
+#     if "checkFinish" in data:
+#         checkFinish = data["checkFinish"]
+# 
+#     bet = auction_house.get_auction_detail(USERID, uuid, checkFinish)
+# 
+#     print(f"Get bet details for BET UUID {uuid}")
+#     print(json.dumps(data, indent="\t"))
+# 
+#     r = {}
+#     r["result"] = "success"
+#     r["data"] = bet
+# 
+#     response = json.dumps(r, indent="\t")
+#     print("RESPONSE:")
+#     print(response)
+# 
+#     return (response, 200)
+# 
+# @app.route(__DYNAMIC_ROOT + "/bets/set_bet.php", methods=['POST'])
+# def set_bet():
+#     USERID = request.values['USERID']
+#     user_key = request.values['user_key']
+#     language = request.values['language']
+#     data = request.values['data']
+# 
+#     if not data.startswith("{"):
+#         data = data[65:]
+#     
+#     data = json.loads(data)
+#     uuid = data["uuid"]
+#     bet_amount = data["bet"]
+#     bet_round = data["round"]
+# 
+#     print(json.dumps(data, indent="\t"))
+# 
+#     auction_house.set_bet(USERID, uuid, bet_amount, bet_round)
+# 
+#     r = {}
+#     r["result"] = "success"
+#     r["data"] = {
+#         "betResult": "OK"
+#     }
+# 
+#     response = json.dumps(r)
+#     # print("RESPONSE:")
+#     # print(response)
+# 
+#     return (response, 200)
 
 @app.route(__DYNAMIC_ROOT + "/sync_error_track.php", methods=['POST'])
 def sync_error_track_response():
