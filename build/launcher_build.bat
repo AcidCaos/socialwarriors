@@ -1,38 +1,47 @@
 @echo off
-title Builder
+set NAME=social-warriors_0.01a
 
-set NAME=social-warriors_0.02a
+REM remember to activate the venv first (Scripts\activate)
 
 :main
 call :pyInstaller
-del /F /Q .\dist\%NAME%\%NAME%.exe.manifest
-del /F /S /Q .\dist\%NAME%\certifi
-rmdir .\dist\%NAME%\certifi
-mkdir .\dist\%NAME%\bundle
-echo.
-echo [MANUAL] Move all files to the bundle folder (except game folders, base_library.zip and python3X.dll).
+echo [+] Building Done!
+REM call :clean
+REM echo [+] Cleaning Done!
 pause>NUL
 exit
 
 :pyInstaller
 echo [+] Starting pyInstaller...
-pyinstaller ^
- --onedir ^
+pyinstaller --onefile ^
  --console ^
- --noupx ^
- --noconfirm ^
- --runtime-hook=".\path_bundle.py" ^
  --add-data "..\..\assets;assets" ^
- --add-data "..\..\config;config" ^
  --add-data "..\..\stub;stub" ^
  --add-data "..\..\templates;templates" ^
  --add-data "..\..\villages;villages" ^
+ --add-data "..\..\config;config" ^
  --paths ..\. ^
  --workpath .\work ^
  --distpath .\dist ^
  --specpath .\bundle ^
+ --noconfirm ^
  --icon=..\icon.ico ^
+ --noupx ^
  --name %NAME% ..\server.py
 REM --debug bootloader
 echo [+] pyInstaller Done.
+EXIT /B 0
+
+:clean
+echo [+] Cleaning...
+rm .\work\*
+rm .\work\.*
+rmdir .\work
+rm .\dist\*
+rm .\dist\.*
+rmdir .\dist
+rm .\bundle\*
+rm .\bundle\.*
+rmdir .\bundle
+echo [+] Cleaning Done.
 EXIT /B 0
