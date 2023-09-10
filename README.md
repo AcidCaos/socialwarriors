@@ -2,7 +2,7 @@
 
 Social Wars preservation project.
 
-:speech_balloon: Check our [Discord server](https://discord.gg/#)
+:speech_balloon: Check our [Discord group](https://discord.gg/zW5gSbQJBw)
 
 ---
 
