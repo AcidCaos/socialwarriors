@@ -114,7 +114,6 @@ def css(path):
 def static_assets_loader(path):
     # LITE-WEIGHT BUILD: ASSETS FROM GITHUB
     if False:
-        # cdn = "https://github.com/AcidCaos/socialwarriors/raw/main/assets/"
         cdn = "https://raw.githubusercontent.com/AcidCaos/socialwarriors/main/assets/"
         try:
             r = requests.get(cdn + path) # TODO timeout, retry

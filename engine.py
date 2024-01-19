@@ -94,8 +94,9 @@ def set_goals(privateState: dict, goal: int, progress: list):
     goals[goal] = progress
 
 def inventory_set(privateState: dict, item: int, quantity: int):
+    itemstr = str(item)
     if quantity > 0:
-        privateState["inventoryItems"][str(item)] = quantity
+        privateState["inventoryItems"][itemstr] = quantity
     else:
         del privateState["inventoryItems"][itemstr]
 
@@ -193,6 +194,15 @@ def pop_queue_unit(item: dict):
         del attr["nu"]
         if "ts" in attr:
             del attr["ts"]
+
+def push_queue_unit2(item: dict, unit_id: int):
+    attr = item[6]
+    if "nu" in attr:
+        attr["nu"] += 1
+    else:
+        attr["nu"] = 1
+    attr["ts"] = timestamp_now()
+    attr["ui"] = unit_id
 
 def map_lose_item(map: dict, privateState: dict, item: int, quantity: int):
     qty = quantity

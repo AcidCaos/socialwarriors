@@ -3,7 +3,8 @@ import json
 from sessions import session, save_session
 from get_game_config import get_name_from_item_id, get_attribute_from_item_id, get_attribute_from_goal_id, get_xp_from_level, get_weekly_reward_length, get_inventory_item_name, get_collection_name, get_collection_prize, get_premium_days
 from constants import Constant
-from engine import timestamp_now, apply_resources, map_add_item, map_add_item_from_item, map_get_item, map_pop_item, map_delete_item, push_unit, pop_unit, add_store_item, remove_store_item, bought_unit_add, unit_collection_complete, set_goals, inventory_set, inventory_add, inventory_remove, add_click, activate_item_click, buy_si_help, finish_si, push_dead_unit, resurrect_hero, push_queue_unit, pop_queue_unit, map_lose_item
+from engine import timestamp_now, apply_resources, map_add_item, map_add_item_from_item, map_get_item, map_pop_item, map_delete_item, push_unit, pop_unit, add_store_item, remove_store_item, bought_unit_add, unit_collection_complete, set_goals, inventory_set, inventory_add, inventory_remove, add_click, activate_item_click, buy_si_help, finish_si, push_dead_unit, resurrect_hero, push_queue_unit, pop_queue_unit, map_lose_item, push_queue_unit2
+from math import ceil
 
 def command(USERID, data):
     first_number = data["first_number"]
@@ -691,9 +692,8 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         if not atom_fusion:
             print("Error: Atom Fusion not found.")
             return
-
-        # TODO
-
+        
+        push_queue_unit2(atom_fusion, unit_id)
         print("Pushed", get_name_from_item_id(unit_id), "to Atom Fusion.")
 
     elif cmd == "pop_queue_unit":
@@ -727,9 +727,16 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
     elif cmd == "soulmixer_speedup":
         atom_fusion_index = args[0]
 
-        # TODO
+        atom_fusion = map_get_item(map, atom_fusion_index)
 
-        print("Buy Atom Fusion Speedup")
+        start = atom_fusion[6]["ts"]
+        now = timestamp_now()
+        sm_training_time = int(get_attribute_from_item_id(atom_fusion[6]["ui"], "sm_training_time"))
+
+        remaining_time = sm_training_time - (now - start)
+        cash_cost = ceil(remaining_time / 3600)
+
+        print(f"Buy Atom Fusion Speedup for {get_name_from_item_id(atom_fusion[6]['ui'])}. Cost: {cash_cost} cash.")
 
     elif cmd == "admin_set_quest_rank":
         quest_index = args[0]

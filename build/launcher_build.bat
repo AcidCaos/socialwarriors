@@ -1,5 +1,5 @@
 @echo off
-set NAME=social-warriors_0.01a
+set NAME=social-warriors_0.02a
 
 REM remember to activate the venv first (Scripts\activate)
 
