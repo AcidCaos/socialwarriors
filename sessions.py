@@ -114,7 +114,7 @@ def new_village() -> str:
     # Copy init
     village = copy.deepcopy(__initial_village)
     # Custom values
-    village["version"] = version_code
+    village["version"] = None # Do not set version, migrate_loaded_save() does it
     village["playerInfo"]["pid"] = USERID
     village["maps"][0]["timestamp"] = timestamp_now()
     # Make sure that the game will initialize targets by calling darts_reset

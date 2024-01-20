@@ -47,7 +47,7 @@
             "increasedPopulation": 0,
             "expirableUnitsTime": {},
             "timestampLastChapter": 0,
-            "questTimes": 0,
+            "questTimes": {},
             "idCurrentMission": 0,
             "currentQuestVars": null,
             "items": {
