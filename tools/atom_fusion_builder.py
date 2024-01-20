@@ -14,6 +14,32 @@ jsonpatch.apply_patch(config, patch, in_place=True)
 # Load list of excluded units from Atom Fusion
 exclude_list = json.load(open("atom_fusion_excluded_units.json", 'r'))
 
+# Breeding order formulas
+
+def breeding_order_simple(a, ar, ai, d, l, v):
+	return int( (10 * a * ar)/(ai + 1) + (10 * d) + (l/100) + v )
+
+def breeding_order_tier_based(a, ar, ai, d, l, v):
+	dps = a / (ai / 30)
+	breeding_order = 1
+	if l > 8000: # TIER 4
+		breeding_order = int(max(220, min(2000, -510 + pow(l / 900, 3) + pow(dps * 1, 0.5))))
+	elif l > 2500: # TIER 3
+		breeding_order = int(max(150, min(219, 150 + pow(l / 1100, 2) + pow(dps * 1, 0.5))))
+	elif l > 1600: # TIER 2
+		breeding_order = int(max(75, min(149, 10 + pow(l / 225, 2) + pow(dps * 5, 0.5))))
+	else: # TIER 1
+		breeding_order = int(max(1, min(74, -4 + pow(l / 200, 2) + pow(dps * 5, 0.5))))
+	sm_training_time = 1000 * breeding_order # in seconds
+	return breeding_order
+
+def breeding_order_health(a, ar, ai, d, l, v):
+	return int(l/5)
+
+def breeding_order_simple2(a, ar, ai, d, l, v):
+	print("attack", a, "range", ar, "interval", ai, "defense", d, "life", l, "vel", v)
+	return int( (10 * a * ar)/(ai + 1) + (l/10) + v )
+
 patch_str = ""
 bool_first = True
 for index, item in enumerate(config["items"]):
@@ -41,20 +67,14 @@ for index, item in enumerate(config["items"]):
 	v = int(item["velocity"])
 
 	# some way to approximate power (aka breeding order)
-	#breeding_order = int( (10 * a * ar)/(ai + 1) + (10 * d) + (l/100) + v )
-
-	dps = a / (ai / 30)
-
-	breeding_order = 1
-	if l > 8000: # TIER 4
-		breeding_order = int(max(220, min(2000, -510 + pow(l / 900, 3) + pow(dps * 1, 0.5))))
-	elif l > 2500: # TIER 3
-		breeding_order = int(max(150, min(219, 150 + pow(l / 1100, 2) + pow(dps * 1, 0.5))))
-	elif l > 1600: # TIER 2
-		breeding_order = int(max(75, min(149, 10 + pow(l / 225, 2) + pow(dps * 5, 0.5))))
-	else: # TIER 1
-		breeding_order = int(max(1, min(74, -4 + pow(l / 200, 2) + pow(dps * 5, 0.5))))
-	sm_training_time = 1000 * breeding_order # in seconds
+	#breeding_order = breeding_order_simple(a, ar, ai, d, l, v)
+	#breeding_order = breeding_order_tier_based(a, ar, ai, d, l, v)
+	breeding_order = breeding_order_health(a, ar, ai, d, l, v)
+	#breeding_order = breeding_order_simple2(a, ar, ai, d, l, v)
+	
+	#sm_training_time = 1000 * breeding_order # in seconds
+	sm_training_time = 500 * breeding_order # in seconds
+	#sm_training_time = 100 * breeding_order # in seconds
 
 	# make patch
 	patch_breeding_order = {
