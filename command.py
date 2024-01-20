@@ -933,6 +933,11 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
             data = items[index]
             data[3] = max(0, data[3] - seconds)
 
+            # building timers (atom fusion)
+            if data[6]:
+                if "ts" in data[6]:
+                    data[6]["ts"] = max(0, data[6]["ts"] - seconds)
+
         # quest times
         questTimes = map["questTimes"]
         for key in questTimes:
