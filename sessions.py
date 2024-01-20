@@ -4,7 +4,6 @@ import copy
 import uuid
 import random
 from flask import session
-# from flask_session import SqlAlchemySessionInterface, current_app
 
 from version import version_code
 from engine import timestamp_now
@@ -138,7 +137,6 @@ def all_saves_userid() -> list:
 def all_userid() -> list:
     "Returns a list of the USERID of every village."
     return list(__villages.keys()) + list(__saves.keys()) + list(__quests.keys())
-    # return [i["playerInfo"]["pid"] for i in __villages] + [i["playerInfo"]["pid"] for i in __quests] + [i["playerInfo"]["pid"] for i in __saves]
 
 def save_info(USERID: str) -> dict:
     save = __saves[USERID]
@@ -167,32 +165,59 @@ def neighbor_session(USERID: str) -> dict:
     if USERID in __villages:
         return __villages[USERID]
 
-def neighbors(USERID: str):
-    neighbors = []
+def fb_friends_str(USERID: str) -> list:
+    friends = []
     # static villages
-    # for key in __villages:
-    #     vill = __villages[key]
-    #     if vill["playerInfo"]["pid"] != '100000030': # general Mike
-    #         neigh = vill["playerInfo"]
-    #         neigh["xp"] = vill["maps"][0]["xp"]
-    #         neigh["level"] = vill["maps"][0]["level"]
-    #         neigh["gold"] = vill["maps"][0]["gold"]
-    #         neigh["wood"] = vill["maps"][0]["wood"]
-    #         neigh["oil"] = vill["maps"][0]["oil"]
-    #         neigh["steel"] = vill["maps"][0]["steel"]
-    #         neighbors += [neigh]
+    for key in __villages:
+        vill = __villages[key]
+        if vill["playerInfo"]["pid"] == "100000030" \
+           or vill["playerInfo"]["pid"] == "100000031": # general Mike
+            continue
+        frie = {}
+        frie["uid"] = vill["playerInfo"]["pid"]
+        frie["pic_square"] = vill["playerInfo"]["pic"]
+        friends += [frie]
     # other players
     for key in __saves:
         vill = __saves[key]
-        if vill["playerInfo"]["pid"] != USERID:
-            neigh = json.loads(json.dumps(vill["playerInfo"])) # Stop clogging up playerInfo when just wanting to send some data from save from a neighbour
-            neigh["xp"] = vill["maps"][0]["xp"]
-            neigh["level"] = vill["maps"][0]["level"]
-            neigh["gold"] = vill["maps"][0]["gold"]
-            neigh["wood"] = vill["maps"][0]["wood"]
-            neigh["oil"] = vill["maps"][0]["oil"]
-            neigh["steel"] = vill["maps"][0]["steel"]
-            neighbors += [neigh]
+        if vill["playerInfo"]["pid"] == USERID:
+            continue
+        frie = {}
+        frie["uid"] = vill["playerInfo"]["pid"]
+        frie["pic_square"] = vill["playerInfo"]["pic"]
+        friends += [frie]
+    return friends
+
+def neighbors(USERID: str):
+    neighbors = []
+    # static villages
+    for key in __villages:
+        vill = __villages[key]
+        if vill["playerInfo"]["pid"] == "100000030" \
+           or vill["playerInfo"]["pid"] == "100000031": # general Mike
+            continue
+        neigh = vill["playerInfo"]
+        neigh = json.loads(json.dumps(vill["playerInfo"]))
+        neigh["xp"] = vill["maps"][0]["xp"]
+        neigh["level"] = vill["maps"][0]["level"]
+        neigh["gold"] = vill["maps"][0]["gold"]
+        neigh["wood"] = vill["maps"][0]["wood"]
+        neigh["oil"] = vill["maps"][0]["oil"]
+        neigh["steel"] = vill["maps"][0]["steel"]
+        neighbors += [neigh]
+    # other players
+    for key in __saves:
+        vill = __saves[key]
+        if vill["playerInfo"]["pid"] == USERID:
+            continue
+        neigh = json.loads(json.dumps(vill["playerInfo"])) # Stop clogging up playerInfo when just wanting to send some data from save from a neighbour
+        neigh["xp"] = vill["maps"][0]["xp"]
+        neigh["level"] = vill["maps"][0]["level"]
+        neigh["gold"] = vill["maps"][0]["gold"]
+        neigh["wood"] = vill["maps"][0]["wood"]
+        neigh["oil"] = vill["maps"][0]["oil"]
+        neigh["steel"] = vill["maps"][0]["steel"]
+        neighbors += [neigh]
     return neighbors
 
 # Check for valid village
