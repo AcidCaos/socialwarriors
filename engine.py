@@ -194,6 +194,8 @@ def pop_queue_unit(item: dict):
         del attr["nu"]
         if "ts" in attr:
             del attr["ts"]
+        if "ui" in attr:
+            del attr["ui"]
 
 def push_queue_unit2(item: dict, unit_id: int):
     attr = item[6]

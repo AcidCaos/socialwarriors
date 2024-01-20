@@ -729,12 +729,16 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
 
         atom_fusion = map_get_item(map, atom_fusion_index)
 
+        # Quite useless cost calculation for understanding it
         start = atom_fusion[6]["ts"]
         now = timestamp_now()
         sm_training_time = int(get_attribute_from_item_id(atom_fusion[6]["ui"], "sm_training_time"))
 
         remaining_time = sm_training_time - (now - start)
         cash_cost = ceil(remaining_time / 3600)
+
+        # Set start timestamp to 0 so that if refreshed, the timer will be gone
+        atom_fusion[6]["ts"] = 0
 
         print(f"Buy Atom Fusion Speedup for {get_name_from_item_id(atom_fusion[6]['ui'])}. Cost: {cash_cost} cash.")
 
