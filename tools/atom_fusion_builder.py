@@ -14,6 +14,16 @@ jsonpatch.apply_patch(config, patch, in_place=True)
 # Load list of excluded units from Atom Fusion
 exclude_list = json.load(open("atom_fusion_excluded_units.json", 'r'))
 
+def must_exclude(item):
+	# exclude non-unit items
+	if item["type"] != "u" \
+	  or "chained" in item["name"].lower() \
+	  or item["group_type"] == "WORKER" \
+	  or item["id"] in exclude_list:
+		# print(f'Excluded [{item["id"]}]{item["name"]}')
+		return True
+	return False
+
 # Breeding order formulas
 
 def breeding_order_simple(a, ar, ai, d, l, v):
@@ -44,18 +54,7 @@ patch_str = ""
 bool_first = True
 for index, item in enumerate(config["items"]):
 
-	# exclude non-unit items
-	if item["type"] != "u":
-		continue
-	# exclude chained promos
-	if "chained" in item["name"].lower():
-		continue
-	# exclude workers
-	if item["group_type"] == "WORKER":
-		continue
-	# explicit exclusions
-	if item["id"] in exclude_list:
-		# print(f'Excluded [{item["id"]}]{item["name"]}')
+	if must_exclude(item):
 		continue
 
 	# some config values for the formula
@@ -67,14 +66,8 @@ for index, item in enumerate(config["items"]):
 	v = int(item["velocity"])
 
 	# some way to approximate power (aka breeding order)
-	#breeding_order = breeding_order_simple(a, ar, ai, d, l, v)
-	#breeding_order = breeding_order_tier_based(a, ar, ai, d, l, v)
 	breeding_order = breeding_order_health(a, ar, ai, d, l, v)
-	#breeding_order = breeding_order_simple2(a, ar, ai, d, l, v)
-	
-	#sm_training_time = 1000 * breeding_order # in seconds
-	sm_training_time = 500 * breeding_order # in seconds
-	#sm_training_time = 100 * breeding_order # in seconds
+	sm_training_time = 250 * breeding_order # in seconds
 
 	# make patch
 	patch_breeding_order = {
