@@ -7,3 +7,6 @@ atom_fusion_items_data
 
 ### Patch other config values
 atom_fusion_powerup
+
+### Darts wrap fix
+targets

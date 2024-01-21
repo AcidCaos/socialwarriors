@@ -1,6 +1,8 @@
 import json
 import os
 import jsonpatch
+import time
+import datetime
 
 from bundle import MODS_DIR, CONFIG_DIR, CONFIG_PATCH_DIR
 
@@ -85,6 +87,7 @@ print (" [+] Cleaning config duplicates...")
 remove_duplicate_items()
 
 def get_game_config() -> dict:
+    make_dynamic(__game_config)
     return __game_config
 
 def game_config() -> dict:
@@ -199,3 +202,48 @@ def get_weekly_reward_length() -> int:
             length = max(length, len(value))
 
     return length
+
+#######################
+# MAKE CONFIG DYNAMIC #
+#######################
+
+def timestamp_now():
+    return int(time.time())
+
+def make_dynamic(config):
+    # darts
+    if "darts_items" in config:
+        darts_items = config["darts_items"]
+
+        # grab first timestamp in config
+        ts_now = timestamp_now()
+        ts_first = 0
+        week_length = 604800
+        num_items = len(darts_items)
+        
+        for game in darts_items:
+            ts_first = time.mktime(datetime.datetime.strptime(game["start_date"], "%Y-%m-%d %H:%M:%S").timetuple())
+            break
+
+        # 30 items are in config, ID 31 is a copy of ID 1 if patch is applied, ignore it
+        # this fixes wrapping on last week
+        wrap_seconds = week_length * num_items
+        if num_items >= 30:
+            wrap_seconds -= week_length
+
+        # should the dates be updated?
+        if ts_now - ts_first >= wrap_seconds:
+            weeks_passed = (ts_now - ts_first) / week_length
+            shift_times = int(weeks_passed // num_items)
+            update_darts(darts_items, wrap_seconds * shift_times)
+            print("[CONFIG] Darts minigame is now dynamic again!")
+
+# updates darts start dates
+def update_darts(darts_items, seconds):
+    for game in darts_items:
+        ts = time.mktime(datetime.datetime.strptime(game["start_date"], "%Y-%m-%d %H:%M:%S").timetuple())
+        new_date = datetime.datetime.fromtimestamp(ts + seconds)
+        new_date = new_date.strftime("%Y-%m-%d %H:%M:%S")
+        # test = game["start_date"]
+        # print(f"{test} -> {new_date}")
+        game["start_date"] = new_date
