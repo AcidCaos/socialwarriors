@@ -2,3 +2,6 @@
 # You don't need to provide the .json extension here, just the name
 # If a line starts with #, it is ignored
 
+# This mod removes the need to pay with cash or hire friends for most buildings making it easier to progress.
+# Usually you would have to pay cash to open a building like a factory since hiring friends cannot be done anymore.
+# no_hiring_needed
