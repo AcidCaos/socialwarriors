@@ -60,7 +60,7 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
     elif cmd == "complete_tutorial":
         tutorial_step = args[0]
         print("Tutorial step", tutorial_step, "reached.")
-        if tutorial_step >= 25:
+        if tutorial_step >= 25 or tutorial_step == 15:
             print("Tutorial COMPLETED!")
             save["playerInfo"]["completed_tutorial"] = 1
         return
