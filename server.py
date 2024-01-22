@@ -315,6 +315,18 @@ def command_response():
     
     return ({"result": "success"}, 200)
 
+# Used by Player's World and Alliance buttons
+# I added this so the error message stops appearing
+@app.route(__DYNAMIC_ROOT + "/alliance/", methods=['POST'])
+def alliance():
+    USERID = request.values['USERID']
+    user_key = request.values['user_key']
+    language = request.values['language']
+    method = request.values['method']
+
+    response = {}
+    return(response, 200)
+
 
 ########
 # MAIN #
