@@ -213,45 +213,36 @@ def timestamp_now():
 def make_dynamic(config):
     # darts
     if "darts_items" in config:
+        # 0 no debug
+        # 1 debug wrap dates
+        # 2 debug all start dates and prizes
+        # 3 debug everything
+        debug = 0
+
+        # grab start date of last item as it is used as the wrap point
         darts_items = config["darts_items"]
-
-        # grab first timestamp in config
+        last_game = darts_items[-1]
+        ts_last = time.mktime(datetime.datetime.strptime(last_game["start_date"], "%Y-%m-%d %H:%M:%S").timetuple())
         ts_now = timestamp_now()
-        ts_first = 0
-        week_length = 604800
-        num_items = len(darts_items)
-        
-        for game in darts_items:
-            ts_first = time.mktime(datetime.datetime.strptime(game["start_date"], "%Y-%m-%d %H:%M:%S").timetuple())
-            break
 
-        # 30 items are in config, first 4 are invalid for SW s
-        # so since we load the patch that removes the first 4 items there are 26 + 1
-        # the 27th is a copy of the first one to fix wrapping on last one
-        wrap_seconds = week_length * num_items
-        if num_items >= 26:
-            wrap_seconds -= week_length
+        # this has to be a loop because working with dates is stupid, and this ensures correct wrapping
+        last_ts = ts_last
+        wraps = 0
+        while ts_now >= last_ts:
+            last_ts = update_darts(darts_items, last_ts, 0, ts_now, debug - 1)
+            wraps += 1
+            if debug > 0:
+                next_wrap = datetime.datetime.fromtimestamp(last_ts).strftime("%Y-%m-%d %H:%M:%S")
+                print(f"[DEBUG] Next darts date wrap is on {next_wrap}")
 
-        # should the dates be updated?
-        if ts_now - ts_first >= wrap_seconds:
-            weeks_passed = (ts_now - ts_first) / week_length
-            shift_times = int(weeks_passed // num_items)
-            seconds = wrap_seconds * shift_times
-
-            # we need to fix start dates to mondays since darts reset every monday regardless of start dates
-            new_date = datetime.datetime.fromtimestamp(ts_first + seconds)
-            seconds -= (new_date.isoweekday() - 1) * 86400
-            new_date = datetime.datetime.fromtimestamp(ts_first + seconds)
-            new_date_str = new_date.strftime("%Y-%m-%d %H:%M:%S")
-            weekday = new_date.isoweekday()
-
-            update_darts(darts_items, ts_first, seconds, 0)    # the number here is the debug level
-            print("[CONFIG] Darts minigame is now dynamic again!")
+        if wraps > 0:
+            print(f"[CONFIG] Darts minigame is now dynamic again! - Wrapped {wraps} time(s)!")
 
 # updates darts start dates
-def update_darts(darts_items, ts_first, seconds, debug = 0):
+def update_darts(darts_items, ts_first, seconds, ts_now, debug = 0):
     week_length = 604800
     shift = seconds
+    last_ts = 0
     for game in darts_items:
         # we ignore the date in config and just rebuild dates based on first date in config starting on monday
         ts = time.mktime(datetime.datetime.strptime(game["start_date"], "%Y-%m-%d %H:%M:%S").timetuple())
@@ -265,10 +256,22 @@ def update_darts(darts_items, ts_first, seconds, debug = 0):
             shift -= 3600
             new_date = datetime.datetime.fromtimestamp(ts_first + shift)
             
-        # fix to monday
+        # fix to nearest monday
         weekday = new_date.isoweekday()
         if weekday == 2:
             shift -= 86400
+            new_date = datetime.datetime.fromtimestamp(ts_first + shift)
+        elif weekday == 3:
+            shift -= 86400 * 2
+            new_date = datetime.datetime.fromtimestamp(ts_first + shift)
+        elif weekday == 4:
+            shift -= 86400 * 3
+            new_date = datetime.datetime.fromtimestamp(ts_first + shift)
+        elif weekday == 5:
+            shift += 86400 * 3
+            new_date = datetime.datetime.fromtimestamp(ts_first + shift)
+        elif weekday == 6:
+            shift += 86400 * 2
             new_date = datetime.datetime.fromtimestamp(ts_first + shift)
         elif weekday == 7:
             shift += 86400
@@ -308,4 +311,9 @@ def update_darts(darts_items, ts_first, seconds, debug = 0):
         game["start_date"] = new_date
 
         # make sure each one lasts exactly 7 days from first one
+        last_ts = ts_first + shift
         shift += week_length
+
+    return last_ts
+
+make_dynamic(__game_config)
