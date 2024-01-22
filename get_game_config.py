@@ -225,25 +225,87 @@ def make_dynamic(config):
             ts_first = time.mktime(datetime.datetime.strptime(game["start_date"], "%Y-%m-%d %H:%M:%S").timetuple())
             break
 
-        # 30 items are in config, ID 31 is a copy of ID 1 if patch is applied, ignore it
-        # this fixes wrapping on last week
+        # 30 items are in config, first 4 are invalid for SW s
+        # so since we load the patch that removes the first 4 items there are 26 + 1
+        # the 27th is a copy of the first one to fix wrapping on last one
         wrap_seconds = week_length * num_items
-        if num_items >= 30:
+        if num_items >= 26:
             wrap_seconds -= week_length
 
         # should the dates be updated?
         if ts_now - ts_first >= wrap_seconds:
             weeks_passed = (ts_now - ts_first) / week_length
             shift_times = int(weeks_passed // num_items)
-            update_darts(darts_items, wrap_seconds * shift_times)
+            seconds = wrap_seconds * shift_times
+
+            # we need to fix start dates to mondays since darts reset every monday regardless of start dates
+            new_date = datetime.datetime.fromtimestamp(ts_first + seconds)
+            seconds -= (new_date.isoweekday() - 1) * 86400
+            new_date = datetime.datetime.fromtimestamp(ts_first + seconds)
+            new_date_str = new_date.strftime("%Y-%m-%d %H:%M:%S")
+            weekday = new_date.isoweekday()
+
+            update_darts(darts_items, ts_first, seconds, 0)    # the number here is the debug level
             print("[CONFIG] Darts minigame is now dynamic again!")
 
 # updates darts start dates
-def update_darts(darts_items, seconds):
+def update_darts(darts_items, ts_first, seconds, debug = 0):
+    week_length = 604800
+    shift = seconds
     for game in darts_items:
+        # we ignore the date in config and just rebuild dates based on first date in config starting on monday
         ts = time.mktime(datetime.datetime.strptime(game["start_date"], "%Y-%m-%d %H:%M:%S").timetuple())
-        new_date = datetime.datetime.fromtimestamp(ts + seconds)
+        new_date = datetime.datetime.fromtimestamp(ts_first + shift)
+
+        # account for daylight savings
+        if new_date.hour == 23:
+            shift += 3600
+            new_date = datetime.datetime.fromtimestamp(ts_first + shift)
+        elif new_date.hour == 1:
+            shift -= 3600
+            new_date = datetime.datetime.fromtimestamp(ts_first + shift)
+            
+        # fix to monday
+        weekday = new_date.isoweekday()
+        if weekday == 2:
+            shift -= 86400
+            new_date = datetime.datetime.fromtimestamp(ts_first + shift)
+        elif weekday == 7:
+            shift += 86400
+            new_date = datetime.datetime.fromtimestamp(ts_first + shift)
+
+        weekday = new_date.isoweekday()
         new_date = new_date.strftime("%Y-%m-%d %H:%M:%S")
-        # test = game["start_date"]
-        # print(f"{test} -> {new_date}")
+        if debug >= 1:
+            test = game["start_date"]
+            
+            # output minor prizes
+            if debug >= 2:
+                game_id = game["id"]
+                print(f"Darts minigame ID: {game_id}")
+
+                idx = 1
+                for unit in game["items"]:
+                    item_id = int(unit)
+                    item = get_item_from_id(item_id)
+                    if item:
+                        item_name = item["name"]
+                    else:
+                        item_name = "INVALID UNIT"
+
+                    print(f"[DEBUG] Minor Prize {idx} = ({item_id}) {item_name}")
+                    idx += 1
+
+            # output major prize and date change
+            major_prize = int(game["extra_item"])
+            item = get_item_from_id(major_prize)
+            item_name = "INVALID MAJOR PRIZE"
+            if item:
+                item_name = item["name"]
+
+            print(f"[DEBUG] {test} -> {new_date} (weekday = {weekday}) -> ({major_prize}) {item_name}")
+
         game["start_date"] = new_date
+
+        # make sure each one lasts exactly 7 days from first one
+        shift += week_length
