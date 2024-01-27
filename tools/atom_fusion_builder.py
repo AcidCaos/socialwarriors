@@ -44,7 +44,7 @@ def breeding_order_tier_based(a, ar, ai, d, l, v):
 	return breeding_order
 
 def breeding_order_health(a, ar, ai, d, l, v):
-	return int(l/5)
+	return min(int(l/20), 240)
 
 def breeding_order_simple2(a, ar, ai, d, l, v):
 	print("attack", a, "range", ar, "interval", ai, "defense", d, "life", l, "vel", v)
@@ -67,7 +67,7 @@ for index, item in enumerate(config["items"]):
 
 	# some way to approximate power (aka breeding order)
 	breeding_order = breeding_order_health(a, ar, ai, d, l, v)
-	sm_training_time = 250 * breeding_order # in seconds
+	sm_training_time = 2000 * breeding_order # in seconds
 
 	# make patch
 	patch_breeding_order = {
