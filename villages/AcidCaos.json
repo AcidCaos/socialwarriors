@@ -1,6 +1,6 @@
 {
     "playerInfo": {
-        "pid": "10000",
+        "pid": "AcidCaos",
         "name": "AcidCaos",
         "pic": "https://avatars.githubusercontent.com/u/11525599?s=68",
         "cash": 500,
@@ -12,7 +12,7 @@
         "map_sizes": [
             0
         ],
-        "world_id": 10000,
+        "world_id": null,
         "sp_ref_uid": 1000,
         "sp_ref_cat_install": "ts",
         "last_logged_in": 1705777565
@@ -48,8 +48,8 @@
                 15
             ],
             "timestamp": 1705668924,
-            "xp": 56321,
-            "level": 31,
+            "xp": 117012,
+            "level": 41,
             "gold": 5898,
             "wood": 1176,
             "oil": 2750,
