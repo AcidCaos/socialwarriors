@@ -394,7 +394,7 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
             print("Error: building not found.")
             return
 
-        unit = pop_unit(building)
+        unit = pop_unit(building, item_id)
         if not unit:
             print("Error: no units in building.")
             return

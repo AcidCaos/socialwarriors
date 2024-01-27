@@ -55,11 +55,17 @@ def push_unit(unit: dict, building: dict):
     building[5].append(unit)
     building[3] = timestamp_now()
 
-def pop_unit(building: dict):
-    if len(building[5]) > 0:
-        return building[5].pop()
-    else:
-        return None
+def pop_unit(building: dict, item_id: int):
+    index = None
+    count = 0
+    for item in building[5]:
+        if item[0] == item_id:
+            index = count
+            break
+        count += 1
+    if index != None:
+        return building[5].pop(index)
+    return None
 
 def add_store_item(map: dict, item: int, quantity: int = 1):
     itemstr = str(item)
