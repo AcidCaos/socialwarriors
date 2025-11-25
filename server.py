@@ -165,7 +165,9 @@ def get_player_info_response():
     # Current Player
     if user is None:
         print(f"[PLAYER INFO] USERID {USERID}.")
-        return (get_player_info(USERID), 200)
+        info = get_player_info(USERID)
+        print(f">> {info}")
+        return (info, 200)
     # General Mike
     elif user in ["100000030","100000031"]:
         print(f"[VISIT] USERID {USERID} visiting General Mike ({user}).")
