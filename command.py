@@ -657,7 +657,7 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         if str(magic_id) in magics:
             magics[str(magic_id)] += min(50, magics[str(magic_id)] + 1)
         else:
-            magics[str(magic_id)] = 0
+            magics[str(magic_id)] = 1
 
         print("Bought magic spell")
 
@@ -669,7 +669,8 @@ def do_command(USERID, map_id, cmd, args, resources_changed):
         if str(magic_id) in magics:
             magics[str(magic_id)] = min(50, magics[str(magic_id)] + 1)
         else:
-            magics[str(magic_id)] = 0
+        #    magics[str(magic_id)] = 0
+            del magics[str(magic_id)]
         
         print("Used magic spell")
 
