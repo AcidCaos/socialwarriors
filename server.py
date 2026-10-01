@@ -4,6 +4,14 @@ import json
 import urllib
 import requests
 import io
+import argparse
+
+# Parsed before anything heavy loads, so --help/bad args answer immediately
+_argparser = argparse.ArgumentParser(description="Social Wars Server")
+_argparser.add_argument("--host", "--ip", dest="host", default="127.0.0.1", help="Host/IP address to bind to (default: 127.0.0.1)")
+_argparser.add_argument("--port", dest="port", type=int, default=5055, help="Port to listen on (default: 5055)")
+_argparser.add_argument("--public-url", dest="public_url", default=None, help="URL the client reaches the server at, e.g. when behind a reverse proxy (default: http://<host>:<port>)")
+_args = _argparser.parse_args()
 
 if os.name == 'nt':
     os.system("color")
@@ -29,7 +37,7 @@ load_quests()
 # auction_house = AuctionHouse()
 
 print (" [+] Loading server...")
-from flask import Flask, render_template, send_from_directory, request, redirect, session, send_file
+from flask import Flask, render_template, send_from_directory, request, redirect, session, send_file, jsonify
 from flask.debughelpers import attach_enctype_error_multidict
 from command import command
 from engine import timestamp_now
@@ -37,8 +45,9 @@ from version import version_name
 from bundle import ASSETS_DIR, STUB_DIR, TEMPLATES_DIR, BASE_DIR
 from constants import Quests
 
-host = '127.0.0.1'
-port = 5055
+BIND_HOST = _args.host
+BIND_PORT = _args.port
+PUBLIC_URL = (_args.public_url or f"http://{BIND_HOST}:{BIND_PORT}").rstrip("/")
 
 app = Flask(__name__, template_folder=TEMPLATES_DIR)
 
@@ -86,7 +95,11 @@ def play():
     GAMEVERSION = session['GAMEVERSION']
     print("[PLAY] USERID:", USERID)
     print("[PLAY] GAMEVERSION:", GAMEVERSION)
-    return render_template("play.html", save_info=save_info(USERID), serverTime=timestamp_now(), friendsInfo=fb_friends_str(USERID), version=version_name, GAMEVERSION=GAMEVERSION, SERVERIP=host, SERVERPORT=port)
+    return render_template("play.html", save_info=save_info(USERID), serverTime=timestamp_now(), friendsInfo=fb_friends_str(USERID), version=version_name, GAMEVERSION=GAMEVERSION, public_url=PUBLIC_URL)
+
+@app.route("/health")
+def health():
+    return jsonify({"status": "ok", "version": version_name})
 
 @app.route("/new.html")
 def new():
@@ -335,5 +348,5 @@ def alliance():
 print (" [+] Running server...")
 
 if __name__ == '__main__':
-    app.secret_key = 'SECRET_KEY'
-    app.run(host=host, port=port, debug=False)
+    app.secret_key = os.urandom(24)
+    app.run(host=BIND_HOST, port=BIND_PORT, debug=False, threaded=True)
