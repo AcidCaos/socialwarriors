@@ -2,6 +2,35 @@
 
 :warning: To play on GNU/Linux, you have to run the server from source.
 
+There are two ways to play:
+
+- **Option A (easier):** Firefox with the Ruffle extension (see [Playing with Ruffle and Firefox](#playing-with-ruffle-and-firefox) section). No old browser or Flash Player needed.
+- **Option B:** A Chromium browser with PPAPI Flash support and Adobe Flash Player (see [Flash Chromium browser](#flash-chromium-browser) and [Flash Player for Linux Pepper](#flash-player-for-linux-pepper) sections).
+
+## Running the server from source
+
+```sh
+git clone https://github.com/AcidCaos/socialwarriors.git
+cd socialwarriors
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python3 server.py
+```
+
+Keep the terminal open while playing. The server listens on `http://127.0.0.1:5055/` by default.
+
+## Playing with Ruffle and Firefox
+
+[Ruffle](https://ruffle.rs/) is an open source Flash Player emulator.
+
+1. Install Firefox.
+2. Install the [Ruffle extension for Firefox](https://addons.mozilla.org/firefox/addon/ruffle_rs/).
+3. Start the server (see [Running the server from source](#running-the-server-from-source)).
+4. Open `http://127.0.0.1:5055/` in Firefox.
+
+## Playing with Chromium and Flash Player
+
 You will need:
 
 - A browser with Flash support (see [Flash Chromium browser](#flash-chromium-browser) section).
